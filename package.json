@@ -1,0 +1,17 @@
+{
+    "name": "kpi-dashboard",
+    "version": "0.0.0",
+    "author": "Nathan Malkin <nmalkin@mozilla.com>",
+    "description": "dashboard to visualize key performance indicators (KPI)",
+    "scripts": {
+        "start": "node server/bin/app",
+        "data": "node server/scripts/fake_data_server.js",
+        "test": ""
+    },
+    "engine": {
+        "node": ">=0.4"
+    },
+    "dependencies": {
+        "express": "latest"
+    }
+}

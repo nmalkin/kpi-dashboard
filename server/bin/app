@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+"use strict";
+
+var api = require('../lib/api'),
+    express = require('express'),
+    app = express.createServer();
+
+app.use(express.logger());
+app.use(express.static(__dirname + '/../../static'));
+
+app.get('/segmentations', api.segmentations);
+
+app.get('/data/sites', api.sites);
+app.get('/data/assertions', api.assertions);
+app.get('/data/:kpi', function(req, res) {
+    res.send('Unknown KPI', 404);
+});
+
+app.get('*', function(req,res) {
+    res.send('Resource not found', 404);
+});
+
+app.listen(3434);
+

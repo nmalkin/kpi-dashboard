@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>KPI Dashboard</title>
+        <link type="text/css" rel="stylesheet" href="css/lib/bootstrap.css">
+        <style>
+            #segment-options {
+                display: none;
+            }
+            .segment-box {
+                display: none;
+            }
+            ul.segment-box {
+                list-style-type: none;
+                margin-left: 15px;
+            }
+            .slider {
+                margin-top: 15px;
+            }
+
+            /* Sankey diagram styles */
+            .node rect {
+              cursor: move;
+              fill-opacity: .9;
+              shape-rendering: crispEdges;
+            }
+
+            .node text {
+              pointer-events: none;
+              text-shadow: 0 1px 0 #fff;
+            }
+
+            .link {
+              fill: none;
+              stroke: #999;
+              stroke-opacity: .3;
+            }
+
+            .link:hover {
+              stroke-opacity: .5;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="navbar">
+                <div class="navbar-inner">
+                        <h1><a class="brand">KPI Dashboard</a></h1>
+                </div>
+            </div>
+
+            <div class="tabbable tabs-left">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#sites" data-toggle="tab">Sites logged in</a>
+                    </li>
+                    <li>
+                        <a href="#assertions" data-toggle="tab">Sign-in attempts</a>
+                    </li>
+                    <li>
+                        <a href="#flow" data-toggle="tab">Sign-in flow</a>
+                    </li>
+                    <li>
+                        <a>Report 4</a>
+                    </li>
+                    <li>
+                        <a>Report 5</a>
+                    </li>
+                    <li>
+                        <a>Report 6</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div id="sites" class="tab-pane active form-inline">
+                        <h2>Median Number of Sites Logged In</h2>
+                        <p>
+                            If the user is authenticated to the Persona servers at any point during the interaction,
+                            we report the number of distinct sites that the user has logged into recently using Persona.
+                        </p>
+                        <p>This report presents the median number of sites logged in, for each day.</p>
+
+                        <div class="chart"></div>
+                        <div class="slider"></div>
+
+                        <div>
+                            <p class="controls">Show
+                                <label class="control-label inline">
+                                    <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="no" checked="checked"> cumulative
+                                </label>
+                                <label class="control-label inline">
+                                    <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
+                                </label>
+                            </p>
+                        </div>
+
+                        <div class="segment-options">
+                            <p>Segment by 
+                                <select class="segment-select input-small">
+                                </select>
+                            </p>
+                            <div class="segment-boxes">
+                            </div>
+                        </div>
+
+                        <p>See as
+                            <label><input name="sites-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
+                            <label><input name="sites-vis-type" class="vis-type" type="radio" value="line"> line</label>
+                        </p>
+
+                        <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
+                    </div>
+
+                    <div id="assertions" class="tab-pane form-inline">
+                        <h2>Total Number of Sign-in Attempts</h2>
+                        <p>
+                        Every time a user tries to login to a site using Persona, the data from the last
+                        interaction is sent over for analysis by the KPI dashboard. Therefore, the total
+                        number of data points approximates the number of login attempts using Persona.
+                        </p>
+                        <p>This report presents the total number of data points, for each day.</p>
+
+
+                        <div class="chart"></div>
+                        <div class="slider"></div>
+
+                        <div>
+                            <p class="controls">Show
+                                <label class="control-label inline">
+                                    <input name="assertions-segment-enabled" class="segment-enabled" type="radio" value="no" checked="checked"> cumulative
+                                </label>
+                                <label class="control-label inline">
+                                    <input name="assertions-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
+                                </label>
+                            </p>
+                        </div>
+
+                        <div class="segment-options">
+                            <p>Segment by 
+                                <select class="segment-select input-small">
+                                </select>
+                            </p>
+                            <div class="segment-boxes">
+                            </div>
+                        </div>
+
+                        <p>See as
+                            <label><input name="assertions-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
+                            <label><input name="assertions-vis-type" class="vis-type" type="radio" value="line"> line</label>
+                        </p>
+
+                        <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
+                    </div>
+
+
+                    <div id="flow" class="tab-pane form-inline">
+                        <h2>Sign-in and registration flow</h2>
+                        <p>A Sankey diagram visualizing the flow through the main interface components.
+                        </p>
+                        <div id="flow-chart"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <link type="text/css" rel="stylesheet" href="css/lib/jquery-ui.css">
+        <link type="text/css" rel="stylesheet" href="css/lib/rickshaw.css">
+
+        <script type="text/javascript" src="js/lib/jquery.min.js"></script>
+        <script type="text/javascript" src="js/lib/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="js/lib/d3.js"></script>
+        <script type="text/javascript" src="js/lib/sankey.js"></script>
+        <script type="text/javascript" src="js/lib/rickshaw.js"></script>
+        <script type="text/javascript" src="js/dashboard.js"></script>
+    </body>
+</html>
