@@ -1,18 +1,6 @@
 "use strict";
 
 /**
- * Converts Unix time to a string with the respective date (but not time).
- *     The output is a string representing the date that this time falls on.
- *     This is used for bucket-izing, so the exact format is not important.
- * @param {Integer} seconds since epoch
- * @return {String} the date on which this time falls
- */
-function getDateStringFromUnixTime(seconds) {
-    var date = new Date(seconds * 1000); // Date constructor takes milliseconds
-    return date.toLocaleDateString();
-}
-
-/**
  * Places the data into buckets according to the category returned by the
  *     aggregator function.
  * @param {Array} data the array of data points
@@ -30,19 +18,6 @@ exports.aggregateData = function(data, aggregator) {
         aggregatedData[category].push(current);
     });
     return aggregatedData;
-};
-
-/**
- * Aggregates given data by date.
- * @param {Array} data the array of data points
- * @param {function: ? -> Integer} timeAccessor extracts Unix time from data point
- * @return {Object} bucketized data, where the buckets are dates
- * @see aggregateData
- */
-exports.aggregateByDate = function(data, timeAccessor) {
-    return exports.aggregateData(data, function(datum) {
-        return getDateStringFromUnixTime(timeAccessor(datum));
-    });
 };
 
 /**
