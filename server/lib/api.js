@@ -1,7 +1,7 @@
 "use strict";
 
-var aggregate = require('./aggregate'),
-    data = require('./data'),
+var data = require('./data'),
+    reports = require('./reports'),
     url = require('url');
 
 /**
@@ -66,76 +66,52 @@ function getIntParamFromURL(urlStr, param) {
 }
 
 /**
- * Processes request for summarized data. Handles requesting and segmenting data,
- *     all you need to provide is the way to summarize the data.
- * @param req request object
- * @param res response object
- * @param {function: Array -> Number} summarizer function saying how to reduce
- *     an array of data to a single number
+ * Validates segmentation preference
+ * @param {String} segmentation segmentation preference
+ * @return {Boolean} true if segmentation is valid, false otherwise
  */
-function handleSummaryRequest(req, res, summarizer) {
+function validateSegmentation(segmentation) {
+    var segmentations = data.getSegmentations();
+    return (segmentation === null) || (segmentation in segmentations);
+}
+
+/**
+ * Parses request for parameters, retrieves report, and sends back response
+ * @param {function(segmentation, start, end, callback}} report function that
+ *     calls callback with results
+ * @param {Object} req Express request object
+ * @param {Object} res Express response object
+ */
+function getReport(report, req, res) {
     // Parse parameters to get segmentation preference and start and end times for data
     var segmentation = getStrParamFromURL(req.url, 'segmentation'),
         start = getIntParamFromURL(req.url, 'start'),
         end = getIntParamFromURL(req.url, 'end');
 
-    // Validate segmentation preference
-    var segmentations = data.getSegmentations();
-    if((segmentation !== null) && (! (segmentation in segmentations))) {
+    // Validate segmentation
+    if(! validateSegmentation(segmentation)) {
         res.send('Invalid segmentation', 400);
         return;
     }
 
-    // Get the requested data
-    data.getData(start, end, function(rawData) {
-        // Put data into buckets based on the desired segmentation
-        var segmentedData;
-        if(segmentation === null) { // If no segmentation is specified,
-            // everything goes into one bucket.
-            segmentedData = {Total: rawData};
-        } else { // Otherwise, aggregate by known segments.
-            segmentedData = aggregate.aggregateBySegment(rawData,
-                segmentations[segmentation], function(datum) {
-                    return data.getSegmentation(segmentation, datum);
-                }
-            );
-        }
-
-        for(var segment in segmentedData) { // for each segment:
-            if(segmentedData.hasOwnProperty(segment)) {
-                // Put data into buckets based on the date of the data point
-                var aggregatedData = aggregate.aggregateByDate(segmentedData[segment],
-                    data.getTimestamp);
-
-                // Summarize the data:
-                var summarizedData = aggregate.summarizeData(aggregatedData, summarizer);
-
-                // Replace segmented data with summarized data
-                segmentedData[segment] = summarizedData;
-            }
-        }
-
-        resultToResponse(segmentedData, res);
-    });
-}
+    // Retrieve report
+    report(segmentation, start, end, function(result) {
+        // Send it back to client
+        resultToResponse(result, res);
+    })
+};
 
 /**
  * Processes request for median number of sites logged in
  */
 exports.sites = function(req, res) {
-    handleSummaryRequest(req, res, function(dayData) { // to summarize each day's data,
-        // find the median number of sites users are logged in to
-        return aggregate.median(dayData.map(data.getNumberSitesLoggedIn));
-    });
+    getReport(reports.sites, req, res);
 };
 
 /**
  * Processes request for total number of assertions generated
  */
 exports.assertions = function(req, res) {
-    handleSummaryRequest(req, res, function(dayData) { // to summarize each day's data,
-        // use the number of data points ~= number of assertions generated ~= login attempts
-        return dayData.length;
-    });
+    getReport(reports.assertions, req, res);
 };
 
