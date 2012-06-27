@@ -4,7 +4,7 @@
 /*global $:false, Rickshaw:false */
 
 var DATA_URL = '/data/',
-    SEGMENTATIONS_URL = '/segmentations',
+    SEGMENTATIONS_URL = '/data/segmentations',
     DEFAULT_SERIES = [ {
         name: 'Data',
         color: '#c05020',

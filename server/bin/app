@@ -9,12 +9,14 @@ var api = require('../lib/api'),
 app.use(express.logger());
 app.use(express.static(__dirname + '/../../static'));
 
-app.get('/segmentations', api.segmentations);
-
-app.get('/data/sites', api.sites);
-app.get('/data/assertions', api.assertions);
-app.get('/data/:kpi', function(req, res) {
-    res.send('Unknown KPI', 404);
+// Access the data API
+app.get('/data/:api', function(req, res) {
+    // All known API calls are exported in the api module
+    if(req.params.api in api) {
+        api[req.params.api](req,res);
+    } else {
+        res.send('Unknown KPI or unrecognized API call', 404);
+    }
 });
 
 app.get('*', function(req,res) {
