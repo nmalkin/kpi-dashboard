@@ -98,8 +98,8 @@ function getReport(report, req, res) {
     report(segmentation, start, end, function(result) {
         // Send it back to client
         resultToResponse(result, res);
-    })
-};
+    });
+}
 
 /**
  * Processes request for median number of sites logged in
