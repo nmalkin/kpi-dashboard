@@ -1,7 +1,7 @@
 "use strict";
 
 // Directives for JSHint:
-/*global $:false, Rickshaw:false */
+/*global $:false, Rickshaw:false, d3:false */
 
 var DATA_URL = '/data/',
     SEGMENTATIONS_URL = '/data/segmentations',
@@ -106,19 +106,20 @@ window.onpopstate = function(event) {
         $(report).addClass('active');
     };
 
+    var report;
     if('state' in event && event.state !== null) { // Try opening tab based on state
-        var report = event.state.report;
+        report = event.state.report;
         activateTab(report);
     } else if(window.location.hash !== '') {
         // There's no state, but maybe we can get the report from the hash?
-        var report = window.location.hash;
+        report = window.location.hash;
         // Does a tab with the requested ID exist?
         if($('[data-toggle="tab"][href="' + report + '"]').length > 0) { // Yes!
             activateTab(report);   
         }
     } else { // No state, no hash
         // Just show the first report in this case.
-        var report = $($('[data-toggle="tab"]')[0]).attr('href');
+        report = $($('[data-toggle="tab"]')[0]).attr('href');
         activateTab(report);
     }
 };
@@ -374,7 +375,7 @@ function updateDisplayedSegments(report) {
     });
 
     // Rickshaw breaks on empty series, so give it a blank one instead.
-    if(newSeries.length == 0) {
+    if(newSeries.length === 0) {
         return false;
     }
 
@@ -630,7 +631,7 @@ setupSegmentControls();
                     color: palette.color(),
                     data: data[segment].map(function(d) {
                         // The first character in the category is the step number:
-                        var step = parseInt(d.category[0]);
+                        var step = parseInt(d.category[0], 10);
 
                         // Save the step name
                         report.steps[step] = d.category;

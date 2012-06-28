@@ -149,7 +149,7 @@ exports.newUserSteps = function(datum) {
     var steps = [];
     var events = eventList(datum);
 
-    if(events.indexOf('screen.set_password') == -1) { // not a new user
+    if(events.indexOf('screen.set_password') === -1) { // not a new user
         return steps;
     }
 
