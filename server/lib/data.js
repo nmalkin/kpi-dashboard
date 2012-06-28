@@ -142,20 +142,16 @@ function eventList(datum) {
 }
 
 /**
- * Returns true if the data point represents a user new to BrowserID (+no IdP)
- */
-exports.isNewUser = function(datum) {
-    var events = eventList(datum);
-    return (events.indexOf('screen.set_password') !== -1);
-};
-
-/**
  * Returns the names of all steps in the new user flow that were completed
  *     in the given data point.
  */
 exports.newUserSteps = function(datum) {
     var steps = [];
     var events = eventList(datum);
+
+    if(events.indexOf('screen.set_password') == -1) { // not a new user
+        return steps;
+    }
 
     config.flows.new_user.forEach(function(step) {
         if(events.indexOf(step[1]) !== -1) {
