@@ -53,6 +53,9 @@
             <div class="tabbable tabs-left">
                 <ul class="nav nav-tabs">
                     <li class="active">
+                        <a href="#new_user" data-toggle="tab">New user flow</a>
+                    </li>
+                    <li>
                         <a href="#sites" data-toggle="tab">Sites logged in</a>
                     </li>
                     <li>
@@ -61,19 +64,48 @@
                     <li>
                         <a href="#flow" data-toggle="tab">Sign-in flow</a>
                     </li>
-                    <li>
-                        <a>Report 4</a>
-                    </li>
-                    <li>
-                        <a>Report 5</a>
-                    </li>
-                    <li>
-                        <a>Report 6</a>
-                    </li>
                 </ul>
 
                 <div class="tab-content">
-                    <div id="sites" class="tab-pane active form-inline">
+                    <div id="new_user" class="tab-pane active form-inline">
+                        <h2>Can new users log in?</h2>
+                        <p>
+                            Tracks the progress of new users through the authentication flow.
+                        </p>
+
+                        <div class="chart"></div>
+                        <div class="slider"></div>
+
+                        <div>
+                            <p class="controls">Show
+                                <label class="control-label inline">
+                                    <input name="newuser-segment-enabled" class="segment-enabled" type="radio" value="no" checked="checked"> cumulative
+                                </label>
+                                <label class="control-label inline">
+                                    <input name="newuser-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
+                                </label>
+                            </p>
+                        </div>
+
+                        <div class="segment-options">
+                            <p>Segment by 
+                                <select class="segment-select input-small">
+                                </select>
+                            </p>
+                            <div class="segment-boxes">
+                            </div>
+                        </div>
+
+                        <p>See as
+                            <label><input name="newuser-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
+                            <label><input name="newuser-vis-type" class="vis-type" type="radio" value="line"> line</label>
+                        </p>
+
+                        <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
+
+                    </div>
+
+                    <div id="sites" class="tab-pane form-inline">
                         <h2>Median Number of Sites Logged In</h2>
                         <p>
                             If the user is authenticated to the Persona servers at any point during the interaction,

@@ -14,25 +14,38 @@ var DATA_URL = '/data/',
 var GRAPH_CONTAINER = '.chart';
 
 var _reports = {
-    // Report 0: median of number_sites_logged_in
-    sites:
+    // Report: new user flow
+    new_user:
         {
-            kpi: 'sites',
-            tab: $('#sites'),
-            graph: null,
-            series: null,
-            segmentation: null
-        }, 
-    // Report 1: total number of data points
-    assertions:
-        {
-            kpi: 'assertions',
-            tab: $('#assertions'),
+            kpi: 'new_user',
+            tab: $('#new_user'),
+            dataToSeries: null, // will be filled in during initialization
+            steps: [], // will hold the names of the steps
             graph: null,
             series: null,
             segmentation: null
         },
-    // Report 2: login flow
+    // Report: median of number_sites_logged_in
+    sites:
+        {
+            kpi: 'sites',
+            tab: $('#sites'),
+            dataToSeries: dataToTimeSeries,
+            graph: null,
+            series: null,
+            segmentation: null
+        }, 
+    // Report: total number of data points
+    assertions:
+        {
+            kpi: 'assertions',
+            tab: $('#assertions'),
+            dataToSeries: dataToTimeSeries,
+            graph: null,
+            series: null,
+            segmentation: null
+        },
+    // Report: login flow
     flow:
         {
             kpi: 'flow',
@@ -141,10 +154,10 @@ function dateToTimestamp(date) {
 /**
  * Converts a data object (server representation) to an array of series objects
  *     (Rickshaw representation).
- * @param data object of the form { <segment>: [ { category: '<date>', value: <value> }, ...], ... }
+ * @param {Object} data object of the form { <segment>: [ { category: '<date>', value: <value> }, ...], ... }
  * @return {Array} [ { name: '<name>', data: [ {x:<x>, y:<y>}, ...], color: '<color>' }, ...]
  */
-function dataToSeries(data) {
+function dataToTimeSeries(data) {
     // Choose colors from built-in color scheme
     var palette = new Rickshaw.Color.Palette( { scheme: 'spectrum14' } );
 
@@ -177,6 +190,11 @@ function dataToSeries(data) {
  *     calls callback with no arguments when done.
  *     Uses cumulative data if segmentation is null.
  * @param {Object} report object with report's variables
+ * @param {function: Object -> Array} dataToSeries function mapping a data object
+ *     of the form
+ *         { <segment>: [ { category: '<date>', value: <value> }, ...], ... }
+ *     to an array of series objects:
+ *         [ { name: '<name>', data: [ {x:<x>, y:<y>}, ...], color: '<color>' }, ...]
  * @param {function} callback to be called when done
  */
 function loadData(report, callback) {
@@ -186,7 +204,7 @@ function loadData(report, callback) {
     }
 
     getData(report.kpi, options, function(data) {
-        report.series = dataToSeries(data);
+        report.series = report.dataToSeries(data);
         callback();
     });
 }
@@ -198,7 +216,7 @@ function loadData(report, callback) {
  * Recreates the graph using the data in series.
  * @param {Array} series the array of data in Rickshaw format
  */
-function redrawGraph(report, series) {
+function drawGraph(report, series) {
     var container = report.tab.find(GRAPH_CONTAINER);
 
     // Clear out graph container
@@ -207,7 +225,6 @@ function redrawGraph(report, series) {
     // Set up a new Rickshaw graph
     report.graph  = new Rickshaw.Graph( {
         element: container[0],
-        dataURL: '/data',
         width: 650,
         height: 500,
         padding: { top: 0.05, bottom: 0.05, left: 0.05, right: 0.05 },
@@ -215,7 +232,14 @@ function redrawGraph(report, series) {
         series: series
     });
     report.graph.render();
+}
 
+/**
+ * Sets up a time series graph in the given report
+ *     The graph object itself must already be initialized.
+ *     @see drawGraph
+ */
+function initTimeGraph(report) {
     // hover details
     var hoverDetail = new Rickshaw.Graph.HoverDetail( {
         graph: report.graph,
@@ -244,7 +268,6 @@ function redrawGraph(report, series) {
         graph: report.graph,
         element: report.tab.find('.slider')
     });
-
 }
 
 /**
@@ -259,16 +282,6 @@ function updateGraph(report, newSeries) {
     // Update the graph with the new series
     report.graph.series = newSeries;
     report.graph.update();
-}
-
-/**
- * Loads data for current segmentation and redraws graph.
- */
-function loadGraph(report) {
-    loadData(report, function() {
-        redrawGraph(report, report.series);
-        cumulativeToggled(report);
-    });
 }
 
 /**
@@ -599,9 +612,80 @@ function makeFlowReport(report) {
 
 /*** ON LOAD ***/
 
+// Setup segmentation controls for all reports
 setupSegmentControls();
-loadGraph(_reports.sites);
-loadGraph(_reports.assertions);
+
+// Set up new user flow report
+(function(report) {
+    // How to convert data to a Rickshaw series
+    report.dataToSeries = function(data) {
+        // Choose colors from built-in color scheme
+        var palette = new Rickshaw.Color.Palette( { scheme: 'spectrum14' } );
+
+        var series = [];
+        for(var segment in data) {
+            if(data.hasOwnProperty(segment)) {
+                series.push({
+                    name: segment,
+                    color: palette.color(),
+                    data: data[segment].map(function(d) {
+                        // The first character in the category is the step number:
+                        var step = parseInt(d.category[0]);
+
+                        // Save the step name
+                        report.steps[step] = d.category;
+
+                        return {
+                            x: step,
+                            y: d.value
+                        };
+                    })
+                });
+            }
+        }
+
+        return series;
+    };
+
+    loadData(report, function() {
+        drawGraph(report, report.series);
+
+        // Format graph with proper axes and hover details
+        (function() {
+            // hover details
+            var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+                graph: report.graph,
+                xFormatter: function(x) {
+                    return report.steps[x].substr(4);
+                },
+                yFormatter: function(y) {
+                    return y + ' people';
+                }
+            } );
+
+            // y axis
+            var yAxis = new Rickshaw.Graph.Axis.Y({
+                graph: report.graph
+            });
+
+            yAxis.render();
+        })();
+
+        // Put the controls and graph in a consistent state
+        cumulativeToggled(report);
+    });
+})(_reports.new_user);
+
+// Setup report for sites and assertions
+[_reports.sites, _reports.assertions].forEach(function(report) {
+    loadData(report, function() {
+        drawGraph(report, report.series);
+        initTimeGraph(report);
+        cumulativeToggled(report);
+    });
+});
+
+// Set up flow report
 makeFlowReport(_reports.flow);
 
 $('.reload').click(function(e) {
