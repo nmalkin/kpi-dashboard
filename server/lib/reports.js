@@ -16,12 +16,38 @@ function getDateStringFromUnixTime(seconds) {
 }
 
 /*
- * Given a data point, returns its date
- * @param {Object} datum data object
- * @return {String} the date of the timestamp
+ * Given an array of data points, aggregates it by date
+ * @param {Array} dataArray array of data objects
+ * @return {Object} the data, aggregated by the date of the timestamp
+ * @see aggregate.aggregateData
  */
-function dateAggregator(datum) {
-    return getDateStringFromUnixTime(data.getTimestamp(datum));
+function dateAggregator(dataArray) {
+    return aggregate.aggregateData(dataArray, function(datum) {
+        return getDateStringFromUnixTime(data.getTimestamp(datum));
+    });
+}
+
+/**
+ * Put data into buckets based on the desired segmentation
+ */
+function segmentData(rawData, segmentation) {
+    var segmentedData;
+
+    if(segmentation === null) { // If no segmentation is specified,
+        // everything goes into one bucket.
+        segmentedData = { Total: rawData };
+    } else { // Otherwise, aggregate by known segments.
+        var segments = data.getSegmentations()[segmentation];
+        segmentedData = aggregate.aggregateData(rawData, function(datum) {
+                var segment = data.getSegmentation(segmentation, datum);
+                return segments.indexOf(segment) === -1 ?
+                    'Other' : segment;
+                    // If the segment is unknown, categorize it as "other."
+            }
+        );
+    }
+
+    return segmentedData;
 }
 
 /**
@@ -33,33 +59,20 @@ function dateAggregator(datum) {
  * @param {String} segmentation segmentation type or null for none
  * @param {Integer} start Unix timestamp of start time or null for none
  * @param {Integer} end Unix timestamp of end time or null for none
- * @param {function: Object -> String } aggregator function mapping data object
- *     to the bucket it should be in
+ * @param {function: Array -> Object } aggregator function mapping array of data
+ *     to object where each field is a bucket of dta objects
  * @param {function: Array -> Number} summarizer function saying how to reduce
  *     an array of data to a single number
  */
 function summaryReport(segmentation, start, end, aggregator, summarizer, callback) {
-    var segmentations = data.getSegmentations();
-
     // Get the requested data
     data.getData(start, end, function(rawData) {
-        // Put data into buckets based on the desired segmentation
-        var segmentedData;
-        if(segmentation === null) { // If no segmentation is specified,
-            // everything goes into one bucket.
-            segmentedData = {Total: rawData};
-        } else { // Otherwise, aggregate by known segments.
-            segmentedData = aggregate.aggregateBySegment(rawData,
-                segmentations[segmentation], function(datum) {
-                    return data.getSegmentation(segmentation, datum);
-                }
-            );
-        }
+        var segmentedData = segmentData(rawData, segmentation);
 
         for(var segment in segmentedData) { // for each segment:
             if(segmentedData.hasOwnProperty(segment)) {
                 // Put data into buckets according to the aggregator
-                var aggregatedData = aggregate.aggregateData(segmentedData[segment], aggregator);
+                var aggregatedData = aggregator(segmentedData[segment]);
 
                 // Summarize the data:
                 var summarizedData = aggregate.summarizeData(aggregatedData, summarizer);

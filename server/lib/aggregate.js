@@ -21,24 +21,6 @@ exports.aggregateData = function(data, aggregator) {
 };
 
 /**
- * Aggregates data by given segments.
- * @param {Array} data the array of data points
- * @param {Array} segments the buckets to use for aggregation
- * @param {function: ? -> String} segmentAccessor extracts the segment in question from data
- * @return {Object} bucketized data, where the buckets are given segments
- *     NOTE: if a segment is not in the segments array, it is put in the bucket "Other"
- * @see aggregateData
- */
-exports.aggregateBySegment = function(data, segments, segmentAccessor) {
-    return exports.aggregateData(data, function(datum) {
-        var segment = segmentAccessor(datum);
-        return segments.indexOf(segment) === -1 ?
-            'Other' : segment;
-            // If the segment is unknown, categorize it as "other."
-    });
-};
-
-/**
  * Returns the median value of the given array.
  * @param {Array} array an array of numeric values
  * @return {Number} the median value of the array (middle value, or mean of
