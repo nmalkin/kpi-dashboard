@@ -61,6 +61,8 @@ exports.median = function(array) {
 
 /**
  * Summarizes data by reducing all data in a category to a single value.
+ *     The result is an array of objects, each having a "category" and a "value".
+ *     The array is sorted by category name.
  * @param {Object} aggregatedData "bucketized" data
  * @param {function: Array -> ?} summarizer a function that reduces an array of
  *     data points to a single value
@@ -68,7 +70,7 @@ exports.median = function(array) {
  *     category and a value: [{category: '<category>', value: <value>}, ...]
  */
 exports.summarizeData = function(aggregatedData, summarizer) {
-    var categories = Object.keys(aggregatedData);
+    var categories = Object.keys(aggregatedData).sort();
     return categories.map(function(category) {
         var categoryData = aggregatedData[category];
         return { category: category, value: summarizer(categoryData) };
