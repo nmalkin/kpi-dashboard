@@ -10,7 +10,7 @@ var DATA_REMOTE = {
 var fs = require('fs'),
     http = require('http');
 
-var segmentations, aliases;
+var config;
 
 /**
  * Reads JSON from a local file, parses it, and calls callback with the result.
@@ -101,8 +101,8 @@ exports.getNumberSitesLoggedIn = function(datum) {
  *     (e.g., find and return the top 5 for each category)
  */
 exports.getSegmentations = function() {
-    if(segmentations) {
-        return segmentations;
+    if(config.segmentations) {
+        return config.segmentations;
     } else {
         throw new Error('segmentations not yet loaded');
     }
@@ -130,8 +130,8 @@ exports.getSegmentation = function(metric, datum) {
             break;
     }
 
-    if(value !== null && value in aliases) {
-        value = aliases[value];
+    if(value !== null && value in config.aliases) {
+        value = config.aliases[value];
     }
 
     return value;
@@ -141,9 +141,8 @@ exports.getSegmentation = function(metric, datum) {
  * Loads configurations from the settings file.
  */
 function loadSettings() {
-    readFile(CONFIG_FILE, function(config) {
-        segmentations = config.segmentations;
-        aliases = config.aliases;
+    readFile(CONFIG_FILE, function(contents) {
+        config = contents;
     });
 }
 
