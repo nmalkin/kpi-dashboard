@@ -15,10 +15,10 @@
     },
     "flows": {
         "new_user": [
-            [ "Enter email", "screen.set_password" ],
-            [ "Choose password", "user.user_staged" ],
-            [ "Email verified", "user.user_confirmed" ],
-            [ "Logged in (assertion generated)", "assertion_generated" ]
+            [ "1 - Enter email", "screen.set_password" ],
+            [ "2 - Choose password", "user.user_staged" ],
+            [ "3 - Email verified", "user.user_confirmed" ],
+            [ "4 - Logged in (assertion generated)", "assertion_generated" ]
         ]
     }
 }
