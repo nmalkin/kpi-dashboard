@@ -21,6 +21,29 @@ exports.aggregateData = function(data, aggregator) {
 };
 
 /**
+ * Works like aggregateData, but data can be placed in multiple buckets.
+ * @param {Array} data
+ * @param {function: Object -> Array[String]} aggregator
+ * @return {Object}
+ * @see aggregateData
+ */
+exports.aggregateMultiple = function(data, aggregator) {
+    var aggregatedData = {};
+
+    data.forEach(function(current) {
+        var categories = aggregator(current);
+        categories.forEach(function(category) {
+            if(! (category in aggregatedData)) {
+                aggregatedData[category] = [];
+            }
+            aggregatedData[category].push(current);
+        });
+    });
+
+    return aggregatedData;
+};
+
+/**
  * Returns the median value of the given array.
  * @param {Array} array an array of numeric values
  * @return {Number} the median value of the array (middle value, or mean of

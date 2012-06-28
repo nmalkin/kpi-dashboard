@@ -115,3 +115,10 @@ exports.assertions = function(req, res) {
     getReport(reports.assertions, req, res);
 };
 
+/**
+ * Processes request for steps in new user flow
+ */
+exports.new_user = function(req, res) {
+    getReport(reports.new_user, req, res);
+};
+

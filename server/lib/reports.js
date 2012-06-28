@@ -111,3 +111,16 @@ exports.assertions = function(segmentation, start, end, callback) {
     }, callback);
 };
 
+/**
+ * Reports the number of users at each step in the sign-in flow for new users
+ */
+exports.new_user = function(segmentation, start, end, callback) {
+    summaryReport(segmentation, start, end,
+    function(rawData) { // place data into buckets by step in the flow
+        return aggregate.aggregateMultiple(rawData, data.newUserSteps);
+    },
+    function(stepData) { // to summarize each step's data,
+        // use the number of data points = number of users at each step
+        return stepData.length;
+    }, callback);
+};

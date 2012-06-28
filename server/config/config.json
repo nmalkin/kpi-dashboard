@@ -12,5 +12,13 @@
     "aliases": {
         "Windows NT 6.1": "Windows 7",
         "Windows NT 5.1": "Windows XP"
+    },
+    "flows": {
+        "new_user": [
+            [ "Enter email", "screen.set_password" ],
+            [ "Choose password", "user.user_staged" ],
+            [ "Email verified", "user.user_confirmed" ],
+            [ "Logged in (assertion generated)", "assertion_generated" ]
+        ]
     }
 }
