@@ -23,6 +23,8 @@ var _reports = {
             steps: [], // will hold the names of the steps
             graph: null,
             series: null,
+            start: null,
+            end: null,
             segmentation: null
         },
     // Report: median of number_sites_logged_in
@@ -33,6 +35,8 @@ var _reports = {
             dataToSeries: dataToTimeSeries,
             graph: null,
             series: null,
+            start: null,
+            end: null,
             segmentation: null
         }, 
     // Report: total number of data points
@@ -43,6 +47,8 @@ var _reports = {
             dataToSeries: dataToTimeSeries,
             graph: null,
             series: null,
+            start: null,
+            end: null,
             segmentation: null
         },
     // Report: login flow
@@ -199,10 +205,13 @@ function dataToTimeSeries(data) {
  * @param {function} callback to be called when done
  */
 function loadData(report, callback) {
-    var options = null;
-    if(report.segmentation) {
-        options = { segmentation: report.segmentation };
-    }
+    var options = {};
+
+    ['start', 'end', 'segmentation'].forEach(function(property) {
+        if(report[property] !== null) {
+            options[property] = report[property];
+        }
+    });
 
     getData(report.kpi, options, function(data) {
         report.series = report.dataToSeries(data);
@@ -296,6 +305,31 @@ function reloadGraph(report) {
 
 
 /*** REPORT CONFIGURATION ***/
+
+/**
+ * Updates report's internal field with currently selected date range.
+ */
+function dateChanged(report) {
+    ['start', 'end'].forEach(function(type) {
+        var input = $('input[type=date].' + type).val();
+        var milliseconds = (new Date(input)).getTime(); // milliseconds since epoch
+        
+        if(! isNaN(milliseconds)) { // Only update if this is a valid date.
+            report[type] = Math.floor(milliseconds / 1000); // in seconds
+        }
+    });
+
+    // Check for valid date, but store values anyway.
+    if(report.start && report.end && report.start > report.end) {
+        alert("Your start date is after your end date. You won't get any data that way.");
+        return;
+    }
+
+    loadData(report, function() {
+        console.log(report.series);
+        updateGraph(report, report.series);
+    });
+}
 
 /**
  * Updates the visibility of segment checkboxes based on currently selected
@@ -707,4 +741,13 @@ $('input.segment-enabled:radio').change(function(e) {
 $('input.vis-type:radio').change(function(e) {
     var report = targetReport(e.target);
     toggleVisualization(report, $(e.target).val());
+});
+
+// Initialize date pickers
+$('input[type=date]').datepicker({ dateFormat: 'yy-mm-dd' });
+
+// update date ranges when inputs change
+$('input[type=date]').change(function(e) {
+    var report = targetReport(e.target);
+    dateChanged(report);
 });
