@@ -1,4 +1,9 @@
 {
+    "data_server": {
+        "host": "localhost",
+        "port": 3435,
+        "path": "/data"
+    },
     "segmentations": {
         "OS": [ "Windows 7", "Windows XP", "Macintosh", "Linux", "Android" ],
         "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],

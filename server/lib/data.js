@@ -1,11 +1,6 @@
 "use strict";
 
 var CONFIG_FILE = '/../config/config.json';
-//TODO: load this from config:
-var DATA_REMOTE = {
-    host: 'localhost',
-    port: 3435,
-    path: '/data' };
 
 var fs = require('fs'),
     http = require('http');
@@ -31,7 +26,7 @@ function readFile(filename, callback) {
  * @param {function} callback the callback to call with the data
  */
 function fetchData(callback) {
-    http.get(DATA_REMOTE, function(res) {
+    http.get(config.data_server, function(res) {
         res.setEncoding('utf8');
         var body = '';
         res.on('data', function(chunk) {
