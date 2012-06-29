@@ -1,6 +1,7 @@
 "use strict";
 
 var aggregate = require('./aggregate'),
+    config = require('./config'),
     data = require('./data');
 
 /**
@@ -116,8 +117,20 @@ exports.assertions = function(segmentation, start, end, callback) {
  */
 exports.new_user = function(segmentation, start, end, callback) {
     summaryReport(segmentation, start, end,
-    function(rawData) { // place data into buckets by step in the flow
-        return aggregate.aggregateMultiple(rawData, data.newUserSteps);
+    function(rawData) {
+        // Place data into buckets by step in the flow
+        var aggregatedData = aggregate.aggregateMultiple(rawData, data.newUserSteps);
+
+        // We want to make sure there's a bucket for each step in the flow,
+        // even if it is empty. (That way, the report looks consistent,
+        // and we're providing the user with a list of all steps.)
+        config.flows.new_user.forEach(function(step) {
+            if(! (step[0] in aggregatedData)) {
+                aggregatedData[step[0]] = [];
+            }
+        });
+
+        return aggregatedData;
     },
     function(stepData) { // to summarize each step's data,
         // use the number of data points = number of users at each step
