@@ -1,24 +1,7 @@
 "use strict";
 
-var CONFIG_FILE = '/../config/config.json';
-
-var fs = require('fs'),
+var config = require('./config'),
     http = require('http');
-
-var config;
-
-/**
- * Reads JSON from a local file, parses it, and calls callback with the result.
- *     The local file is defined as a constant at the top of this file.
- * @param {String} filename the name of the file
- * @param {function} callback the callback to call with the data
- */
-function readFile(filename, callback) {
-    fs.readFile(__dirname + filename, 'utf-8', function(err, data) {
-        if(err) throw err;
-        callback(JSON.parse(data));
-    });
-}
 
 /**
  * Reads data from a remote file and calls callback with it.
@@ -162,14 +145,4 @@ exports.newUserSteps = function(datum) {
     return steps;
 };
 
-/**
- * Loads configurations from the settings file.
- */
-function loadSettings() {
-    readFile(CONFIG_FILE, function(contents) {
-        config = contents;
-    });
-}
 
-// On initialization:
-loadSettings();
