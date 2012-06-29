@@ -215,6 +215,12 @@ function loadData(report, callback) {
 
     getData(report.kpi, options, function(data) {
         report.series = report.dataToSeries(data);
+
+        // If any series are empty, filter them out.
+        report.series = report.series.filter(function(series) {
+            return series.data.length > 0;
+        })
+
         callback();
     });
 }
@@ -291,7 +297,12 @@ function updateGraph(report, newSeries) {
 
     // Update the graph with the new series
     report.graph.series = newSeries;
-    report.graph.update();
+    try {
+        report.graph.update();
+    } catch(e) { // Something bad happened while trying to update the graph.
+        // Draw a new graph
+        drawGraph(report, newSeries);
+    }
 }
 
 /**
@@ -326,7 +337,6 @@ function dateChanged(report) {
     }
 
     loadData(report, function() {
-        console.log(report.series);
         updateGraph(report, report.series);
     });
 }
@@ -678,6 +688,8 @@ setupSegmentControls();
                 });
             }
         }
+
+        Rickshaw.Series.zeroFill(series);
 
         return series;
     };
