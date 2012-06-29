@@ -780,8 +780,9 @@ $('input[type=date].end').val(LATEST_DATE);
     var startTime = dateToTimestamp(EARLIEST_DATE);
     var endTime = dateToTimestamp(LATEST_DATE);
 
-    $('.date-slider').slider({
+    $('.date-slider').dragslider({
         range: true,
+        rangeDrag: true,
         min: startTime,
         max: endTime,
         values: [startTime, endTime],
