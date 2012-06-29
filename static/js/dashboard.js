@@ -3,8 +3,20 @@
 // Directives for JSHint:
 /*global $:false, Rickshaw:false, d3:false */
 
+/**
+ * Converts the given timestamp to a string date
+ * @param {Integer} timestamp seconds since epoch
+ * @return {String} date in the format YYYY-MM-DD
+ */
+function timestampToDate(timestamp) {
+    return (new Date(timestamp * 1000)).toISOString().substr(0,10);
+}
+
 var DATA_URL = '/data/',
     SEGMENTATIONS_URL = '/data/segmentations',
+    EARLIEST_DATE = '2012-05-01', // The earliest date to use as input.
+        // TODO: ^ get from server
+    LATEST_DATE = timestampToDate(Date.now() / 1000), // today
     DEFAULT_SERIES = [ {
         name: 'Data',
         color: '#c05020',
@@ -219,7 +231,7 @@ function loadData(report, callback) {
         // If any series are empty, filter them out.
         report.series = report.series.filter(function(series) {
             return series.data.length > 0;
-        })
+        });
 
         callback();
     });
@@ -758,8 +770,49 @@ $('input.vis-type:radio').change(function(e) {
 // Initialize date pickers
 $('input[type=date]').datepicker({ dateFormat: 'yy-mm-dd' });
 
-// update date ranges when inputs change
+// Initialize date range to default values
+$('input[type=date].start').val(EARLIEST_DATE);
+$('input[type=date].end').val(LATEST_DATE);
+
+// Initialize sliders to also be used as date inputs
+(function() {
+    // Slider input must be numeric; convert dates to Unix time
+    var startTime = dateToTimestamp(EARLIEST_DATE);
+    var endTime = dateToTimestamp(LATEST_DATE);
+
+    $('.date-slider').slider({
+        range: true,
+        min: startTime,
+        max: endTime,
+        values: [startTime, endTime],
+        slide: function(event, ui) { // Update date boxes when slider moves
+            var report = targetReport(event.target);
+
+            var startDate = timestampToDate(ui.values[0]);
+            var endDate = timestampToDate(ui.values[1]);
+            
+            $('input[type=date].start').val(startDate);
+            $('input[type=date].end').val(endDate);
+
+            dateChanged(report);
+        }
+    });
+})();
+
+// Update date ranges when inputs change
 $('input[type=date]').change(function(e) {
     var report = targetReport(e.target);
+
+    // Update the slider to reflect the change
+    var target = $(e.target);
+    var slider = report.tab.find('.date-slider');
+    var currentValues = slider.slider('option', 'values');
+    var timestamp = dateToTimestamp(target.val());
+    if(target.hasClass('start')) {
+        slider.slider('option', 'values', [timestamp, currentValues[1]]);
+    } else if(target.hasClass('end')) {
+        slider.slider('option', 'values', [currentValues[0], timestamp]);
+    }
+
     dateChanged(report);
 });
