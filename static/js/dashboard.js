@@ -807,12 +807,12 @@ $('input[type=date]').change(function(e) {
     // Update the slider to reflect the change
     var target = $(e.target);
     var slider = report.tab.find('.date-slider');
-    var currentValues = slider.slider('option', 'values');
+    var currentValues = slider.dragslider('option', 'values');
     var timestamp = dateToTimestamp(target.val());
     if(target.hasClass('start')) {
-        slider.slider('option', 'values', [timestamp, currentValues[1]]);
+        slider.dragslider('option', 'values', [timestamp, currentValues[1]]);
     } else if(target.hasClass('end')) {
-        slider.slider('option', 'values', [currentValues[0], timestamp]);
+        slider.dragslider('option', 'values', [currentValues[0], timestamp]);
     }
 
     dateChanged(report);
