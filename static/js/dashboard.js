@@ -33,6 +33,7 @@ var _reports = {
             tab: $('#new_user'),
             dataToSeries: null, // will be filled in during initialization
             steps: [], // will hold the names of the steps
+            total: 0, // will hold the total number of people report covers
             graph: null,
             series: null,
             start: null,
@@ -679,13 +680,24 @@ setupSegmentControls();
         // Choose colors from built-in color scheme
         var palette = new Rickshaw.Color.Palette( { scheme: 'spectrum14' } );
 
+        // Keep track of total number of people
+        report.total = 0;
+
         var series = [];
         for(var segment in data) {
             if(data.hasOwnProperty(segment)) {
+                var segmentData = data[segment];
+
+                if(segmentData.length > 0) {
+                    // 100% of people will be present in the first step,
+                    // so we add the number from the first step to the total.
+                    report.total += segmentData[0].value;
+                }
+
                 series.push({
                     name: segment,
                     color: palette.color(),
-                    data: data[segment].map(function(d) {
+                    data: segmentData.map(function(d) {
                         // The first character in the category is the step number:
                         var step = parseInt(d.category[0], 10);
 
@@ -714,11 +726,11 @@ setupSegmentControls();
             // hover details
             var hoverDetail = new Rickshaw.Graph.HoverDetail( {
                 graph: report.graph,
-                xFormatter: function(x) {
+                xFormatter: function(x) { // Display step name (remove step number)
                     return report.steps[x].substr(4);
                 },
-                yFormatter: function(y) {
-                    return y + ' people';
+                yFormatter: function(y) { // Display percentage of total users
+                    return (report.total === 0) ? '0' : Math.round(y / report.total * 100) + '%';
                 }
             } );
 
