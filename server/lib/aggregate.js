@@ -1,33 +1,14 @@
 "use strict";
 
 /**
- * Places the data into buckets according to the category returned by the
+ * Places the data into buckets according to the categories returned by the
  *     aggregator function.
  * @param {Array} data the array of data points
- * @param {function: Object -> String} aggregator given a data point, this
- *     function returns the bucket it should be in
+ * @param {function: Object -> Array[String]} aggregator given a data point, this
+ *     function returns the buckets it should be in
  * @return {Object} of the form: { "<bucket>": [{data point}, {data point}, ...] }
  */
 exports.aggregateData = function(data, aggregator) {
-    var aggregatedData = {};
-    data.forEach(function(current) {
-        var category = aggregator(current);
-        if(! (category in aggregatedData)) {
-            aggregatedData[category] = [];
-        }
-        aggregatedData[category].push(current);
-    });
-    return aggregatedData;
-};
-
-/**
- * Works like aggregateData, but data can be placed in multiple buckets.
- * @param {Array} data
- * @param {function: Object -> Array[String]} aggregator
- * @return {Object}
- * @see aggregateData
- */
-exports.aggregateMultiple = function(data, aggregator) {
     var aggregatedData = {};
 
     data.forEach(function(current) {

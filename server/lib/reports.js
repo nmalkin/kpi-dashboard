@@ -24,7 +24,7 @@ function getDateStringFromUnixTime(seconds) {
  */
 function dateAggregator(dataArray) {
     return aggregate.aggregateData(dataArray, function(datum) {
-        return getDateStringFromUnixTime(data.getTimestamp(datum));
+        return [ getDateStringFromUnixTime(data.getTimestamp(datum)) ];
     });
 }
 
@@ -42,7 +42,7 @@ function segmentData(rawData, segmentation) {
         segmentedData = aggregate.aggregateData(rawData, function(datum) {
                 var segment = data.getSegmentation(segmentation, datum);
                 return segments.indexOf(segment) === -1 ?
-                    'Other' : segment;
+                    [ 'Other' ] : [ segment ];
                     // If the segment is unknown, categorize it as "other."
             }
         );
@@ -119,7 +119,7 @@ exports.new_user = function(segmentation, start, end, callback) {
     summaryReport(segmentation, start, end,
     function(rawData) {
         // Place data into buckets by step in the flow
-        var aggregatedData = aggregate.aggregateMultiple(rawData, data.newUserSteps);
+        var aggregatedData = aggregate.aggregateData(rawData, data.newUserSteps);
 
         // We want to make sure there's a bucket for each step in the flow,
         // even if it is empty. (That way, the report looks consistent,
