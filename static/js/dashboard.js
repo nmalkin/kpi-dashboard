@@ -354,27 +354,35 @@ function reloadGraph(report) {
 /*** REPORT CONFIGURATION ***/
 
 /**
- * Updates report's internal field with currently selected date range.
+ * Validates currently selected dates, then updates report based on them
+ *     Updating the report entails loading new data and updating the graph.
+ *     This only happens if the dates pass validation.
+ * @return {Boolean} false if dates were invalid, true otherwise
  */
 function dateChanged(report) {
     ['start', 'end'].forEach(function(type) {
         var input = report.tab.find('input[type=date].' + type).val();
         var milliseconds = (new Date(input)).getTime(); // milliseconds since epoch
         
-        if(! isNaN(milliseconds)) { // Only update if this is a valid date.
-            report[type] = Math.floor(milliseconds / 1000); // in seconds
+        if(isNaN(milliseconds)) { // Not a valid date
+            alert('Invalid date entered');
+            return false;
         }
+
+        report[type] = Math.floor(milliseconds / 1000); // in seconds
     });
 
-    // Check for valid date, but store values anyway.
+    // Check for valid date range
     if(report.start && report.end && report.start > report.end) {
         alert("Your start date is after your end date. You won't get any data that way.");
-        return;
+        return false;
     }
 
     loadData(report, function() {
         updateGraph(report, report.series);
     });
+
+    return true;
 }
 
 /**
@@ -821,16 +829,16 @@ $('input[type=date].end').val(LATEST_DATE);
 $('input[type=date]').change(function(e) {
     var report = targetReport(e.target);
 
-    // Update the slider to reflect the change
-    var target = $(e.target);
-    var slider = report.tab.find('.date-slider');
-    var currentValues = slider.dragslider('option', 'values');
-    var timestamp = dateToTimestamp(target.val());
-    if(target.hasClass('start')) {
-        slider.dragslider('option', 'values', [timestamp, currentValues[1]]);
-    } else if(target.hasClass('end')) {
-        slider.dragslider('option', 'values', [currentValues[0], timestamp]);
+    if(dateChanged(report)) { // If the selected dates pass validation,
+        // Update the slider to reflect the change
+        var target = $(e.target);
+        var slider = report.tab.find('.date-slider');
+        var currentValues = slider.dragslider('option', 'values');
+        var timestamp = dateToTimestamp(target.val());
+        if(target.hasClass('start')) {
+            slider.dragslider('option', 'values', [timestamp, currentValues[1]]);
+        } else if(target.hasClass('end')) {
+            slider.dragslider('option', 'values', [currentValues[0], timestamp]);
+        }
     }
-
-    dateChanged(report);
 });
