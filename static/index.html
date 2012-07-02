@@ -76,13 +76,15 @@
                         <div class="chart"></div>
 
                         <div style="margin-top: 30px">
-                            <p>
-                                From
-                                <input type="date" class="start" placeholder="YYYY-MM-DD">
-                                to
-                                <input type="date" class="end" placeholder="YYYY-MM-DD">
-                            </p>
-                            <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                            <div class="date-select">
+                                <p>
+                                    From
+                                    <input type="date" class="start" placeholder="YYYY-MM-DD">
+                                    to
+                                    <input type="date" class="end" placeholder="YYYY-MM-DD">
+                                </p>
+                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                            </div>
 
                             <p class="controls">Show
                                 <label class="control-label inline">
@@ -121,9 +123,17 @@
                         <p>This report presents the median number of sites logged in, for each day.</p>
 
                         <div class="chart"></div>
-                        <div class="slider"></div>
 
                         <div>
+                            <div class="date-select">
+                                <p>
+                                    From
+                                    <input type="date" class="start" placeholder="YYYY-MM-DD">
+                                    to
+                                    <input type="date" class="end" placeholder="YYYY-MM-DD">
+                                </p>
+                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                            </div>
                             <p class="controls">Show
                                 <label class="control-label inline">
                                     <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="no" checked="checked"> cumulative
@@ -162,9 +172,17 @@
 
 
                         <div class="chart"></div>
-                        <div class="slider"></div>
 
                         <div>
+                            <div class="date-select">
+                                <p>
+                                    From
+                                    <input type="date" class="start" placeholder="YYYY-MM-DD">
+                                    to
+                                    <input type="date" class="end" placeholder="YYYY-MM-DD">
+                                </p>
+                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                            </div>
                             <p class="controls">Show
                                 <label class="control-label inline">
                                     <input name="assertions-segment-enabled" class="segment-enabled" type="radio" value="no" checked="checked"> cumulative

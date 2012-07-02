@@ -294,12 +294,6 @@ function initTimeGraph(report) {
     });
 
     yAxis.render();
-
-    // slider
-    var slider = new Rickshaw.Graph.RangeSlider({
-        graph: report.graph,
-        element: report.tab.find('.slider')
-    });
 }
 
 /**
@@ -364,7 +358,7 @@ function reloadGraph(report) {
  */
 function dateChanged(report) {
     ['start', 'end'].forEach(function(type) {
-        var input = $('input[type=date].' + type).val();
+        var input = report.tab.find('input[type=date].' + type).val();
         var milliseconds = (new Date(input)).getTime(); // milliseconds since epoch
         
         if(! isNaN(milliseconds)) { // Only update if this is a valid date.
