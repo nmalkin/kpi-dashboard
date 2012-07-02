@@ -32,6 +32,7 @@ var _reports = {
             kpi: 'new_user',
             tab: $('#new_user'),
             dataToSeries: null, // will be filled in during initialization
+            graphDecorator: initStepGraph,
             steps: [], // will hold the names of the steps
             total: 0, // will hold the total number of people report covers
             graph: null,
@@ -46,6 +47,7 @@ var _reports = {
             kpi: 'sites',
             tab: $('#sites'),
             dataToSeries: dataToTimeSeries,
+            graphDecorator: initTimeGraph,
             graph: null,
             series: null,
             start: null,
@@ -58,6 +60,7 @@ var _reports = {
             kpi: 'assertions',
             tab: $('#assertions'),
             dataToSeries: dataToTimeSeries,
+            graphDecorator: initTimeGraph,
             graph: null,
             series: null,
             start: null,
@@ -264,7 +267,7 @@ function drawGraph(report, series) {
 }
 
 /**
- * Sets up a time series graph in the given report
+ * Sets up a Rickshaw time series graph in the given report
  *     The graph object itself must already be initialized.
  *     @see drawGraph
  */
@@ -300,6 +303,31 @@ function initTimeGraph(report) {
 }
 
 /**
+ * Sets up a Rickshaw step-graph in the given report
+ *     The graph object itself must already be initialized.
+ *     @see drawGraph
+ */
+function initStepGraph(report) {
+    // hover details
+    var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+        graph: report.graph,
+        xFormatter: function(x) { // Display step name (remove step number)
+            return report.steps[x].substr(4);
+        },
+        yFormatter: function(y) { // Display percentage of total users
+            return (report.total === 0) ? '0' : Math.round(y / report.total * 100) + '%';
+        }
+    } );
+
+    // y axis
+    var yAxis = new Rickshaw.Graph.Axis.Y({
+        graph: report.graph
+    });
+
+    yAxis.render();
+}
+
+/**
  * Updates the graph with the given series.
  *     Note: the graph needs to be initialized for that to work.
  * @param {Array} an array of series objects (in Rickshaw format)
@@ -315,6 +343,7 @@ function updateGraph(report, newSeries) {
     } catch(e) { // Something bad happened while trying to update the graph.
         // Draw a new graph
         drawGraph(report, newSeries);
+        report.decorateGraph(report);
     }
 }
 
@@ -722,25 +751,7 @@ setupSegmentControls();
         drawGraph(report, report.series);
 
         // Format graph with proper axes and hover details
-        (function() {
-            // hover details
-            var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-                graph: report.graph,
-                xFormatter: function(x) { // Display step name (remove step number)
-                    return report.steps[x].substr(4);
-                },
-                yFormatter: function(y) { // Display percentage of total users
-                    return (report.total === 0) ? '0' : Math.round(y / report.total * 100) + '%';
-                }
-            } );
-
-            // y axis
-            var yAxis = new Rickshaw.Graph.Axis.Y({
-                graph: report.graph
-            });
-
-            yAxis.render();
-        })();
+        initStepGraph(report);
 
         // Put the controls and graph in a consistent state
         cumulativeToggled(report);
