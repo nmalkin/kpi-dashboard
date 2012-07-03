@@ -37,8 +37,8 @@ var _reports = {
             total: 0, // will hold the total number of people report covers
             graph: null,
             series: null,
-            start: null,
-            end: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
             segmentation: null
         },
     // Report: median of number_sites_logged_in
@@ -50,8 +50,8 @@ var _reports = {
             graphDecorator: initTimeGraph,
             graph: null,
             series: null,
-            start: null,
-            end: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
             segmentation: null
         }, 
     // Report: total number of data points
@@ -63,8 +63,8 @@ var _reports = {
             graphDecorator: initTimeGraph,
             graph: null,
             series: null,
-            start: null,
-            end: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
             segmentation: null
         },
     // Report: login flow
