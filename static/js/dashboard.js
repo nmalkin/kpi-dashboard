@@ -337,7 +337,7 @@ function updateGraph(report, newSeries) {
     } catch(e) { // Something bad happened while trying to update the graph.
         // Draw a new graph
         drawGraph(report, newSeries);
-        report.decorateGraph(report);
+        report.graphDecorator(report);
     }
 }
 
