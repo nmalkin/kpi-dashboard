@@ -6,12 +6,13 @@
         <link type="text/css" rel="stylesheet" href="css/lib/bootstrap.css">
         <style>
             .chart-controls {
-                margin-top: 25px;
+                margin: 25px 0 0 15px;
             }
 
-            #segment-options {
+            .segment-options {
                 display: none;
             }
+
             .segment-box {
                 display: none;
             }
@@ -19,6 +20,7 @@
                 list-style-type: none;
                 margin-left: 15px;
             }
+
             .slider {
                 margin-top: 15px;
             }
@@ -98,24 +100,23 @@
                                     <input name="newuser-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
                                 </label>
                             </p>
-                        </div>
 
-                        <div class="segment-options">
-                            <p>Segment by 
-                                <select class="segment-select input-small">
-                                </select>
-                            </p>
-                            <div class="segment-boxes">
+                            <div class="segment-options">
+                                <p>Segment by 
+                                    <select class="segment-select input-small">
+                                    </select>
+                                </p>
+                                <div class="segment-boxes">
+                                </div>
                             </div>
+
+                            <p>See as
+                                <label><input name="newuser-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
+                                <label><input name="newuser-vis-type" class="vis-type" type="radio" value="line"> line</label>
+                            </p>
+
+                            <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
                         </div>
-
-                        <p>See as
-                            <label><input name="newuser-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
-                            <label><input name="newuser-vis-type" class="vis-type" type="radio" value="line"> line</label>
-                        </p>
-
-                        <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
-
                     </div>
 
                     <div id="sites" class="tab-pane form-inline">
@@ -147,23 +148,23 @@
                                     <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
                                 </label>
                             </p>
-                        </div>
 
-                        <div class="segment-options">
-                            <p>Segment by 
-                                <select class="segment-select input-small">
-                                </select>
-                            </p>
-                            <div class="segment-boxes">
+                            <div class="segment-options">
+                                <p>Segment by 
+                                    <select class="segment-select input-small">
+                                    </select>
+                                </p>
+                                <div class="segment-boxes">
+                                </div>
                             </div>
+
+                            <p>See as
+                                <label><input name="sites-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
+                                <label><input name="sites-vis-type" class="vis-type" type="radio" value="line"> line</label>
+                            </p>
+
+                            <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
                         </div>
-
-                        <p>See as
-                            <label><input name="sites-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
-                            <label><input name="sites-vis-type" class="vis-type" type="radio" value="line"> line</label>
-                        </p>
-
-                        <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
                     </div>
 
                     <div id="assertions" class="tab-pane form-inline">
@@ -197,23 +198,23 @@
                                     <input name="assertions-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
                                 </label>
                             </p>
-                        </div>
 
-                        <div class="segment-options">
-                            <p>Segment by 
-                                <select class="segment-select input-small">
-                                </select>
-                            </p>
-                            <div class="segment-boxes">
+                            <div class="segment-options">
+                                <p>Segment by 
+                                    <select class="segment-select input-small">
+                                    </select>
+                                </p>
+                                <div class="segment-boxes">
+                                </div>
                             </div>
+
+                            <p>See as
+                                <label><input name="assertions-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
+                                <label><input name="assertions-vis-type" class="vis-type" type="radio" value="line"> line</label>
+                            </p>
+
+                            <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
                         </div>
-
-                        <p>See as
-                            <label><input name="assertions-vis-type" class="vis-type" type="radio" value="area" checked="checked"> area</label>
-                            <label><input name="assertions-vis-type" class="vis-type" type="radio" value="line"> line</label>
-                        </p>
-
-                        <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
                     </div>
 
 
