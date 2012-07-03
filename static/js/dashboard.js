@@ -753,7 +753,7 @@ setupSegmentControls();
         drawGraph(report, report.series);
 
         // Format graph with proper axes and hover details
-        initStepGraph(report);
+        report.graphDecorator(report);
 
         // Put the controls and graph in a consistent state
         cumulativeToggled(report);
@@ -764,7 +764,7 @@ setupSegmentControls();
 [_reports.sites, _reports.assertions].forEach(function(report) {
     loadData(report, function() {
         drawGraph(report, report.series);
-        initTimeGraph(report);
+        report.graphDecorator(report);
         cumulativeToggled(report);
     });
 });
