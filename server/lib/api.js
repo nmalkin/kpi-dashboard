@@ -1,6 +1,7 @@
 "use strict";
 
 var data = require('./data'),
+    config = require('./config'),
     reports = require('./reports'),
     url = require('url');
 
@@ -22,6 +23,13 @@ function resultToResponse(result, response) {
 exports.segmentations = function(req, res) {
     var segmentations = data.getSegmentations();
     resultToResponse(segmentations, res);
+};
+
+/**
+ * Processes request for milestones
+ */
+exports.milestones = function(req, res) {
+    resultToResponse(config.milestones, res);
 };
 
 /**

@@ -20,5 +20,19 @@
             [ "3 - Email verified", "user.user_confirmed" ],
             [ "4 - Logged in (assertion generated)", "assertion_generated" ]
         ]
-    }
+    },
+    "milestones": [
+        {
+            "milestone": "&alpha; release",
+            "date": "2012-05-01"
+        },
+        {
+            "milestone": "&beta; release",
+            "date": "2012-06-01"
+        },
+        {
+            "milestone": "&gamma; release",
+            "date": "2012-07-01"
+        }
+    ]
 }

@@ -76,6 +76,8 @@ var _reports = {
         }
 };
 
+var _milestones = [];
+
 /*** TAB SWITCHING ***/
 
 /**
@@ -272,7 +274,6 @@ function drawGraph(report, series) {
  *     @see drawGraph
  */
 function initTimeGraph(report) {
-    // hover details
     var hoverDetail = new Rickshaw.Graph.HoverDetail( {
         graph: report.graph,
         xFormatter: function(x) {
@@ -281,19 +282,24 @@ function initTimeGraph(report) {
         }
     } );
 
-    // x axis
     var xAxis = new Rickshaw.Graph.Axis.Time({
         graph: report.graph
     });
-
     xAxis.render();
 
-    // y axis
     var yAxis = new Rickshaw.Graph.Axis.Y({
         graph: report.graph
     });
-
     yAxis.render();
+
+    var annotator = new Rickshaw.Graph.Annotate({
+        graph: report.graph,
+        element: report.tab.find('.timeline')[0]
+    });
+
+    _milestones.forEach(function(milestone) {
+        annotator.add(dateToTimestamp(milestone.date), milestone.milestone);
+    });
 }
 
 /**
@@ -703,6 +709,11 @@ function makeFlowReport(report) {
 
 // Setup segmentation controls for all reports
 setupSegmentControls();
+
+// Load milestones
+getData('milestones', {}, function(data) {
+    _milestones = data;
+});
 
 // Set up new user flow report
 (function(report) {
