@@ -24,28 +24,6 @@
             .slider {
                 margin-top: 15px;
             }
-
-            /* Sankey diagram styles */
-            .node rect {
-              cursor: move;
-              fill-opacity: .9;
-              shape-rendering: crispEdges;
-            }
-
-            .node text {
-              pointer-events: none;
-              text-shadow: 0 1px 0 #fff;
-            }
-
-            .link {
-              fill: none;
-              stroke: #999;
-              stroke-opacity: .3;
-            }
-
-            .link:hover {
-              stroke-opacity: .5;
-            }
         </style>
     </head>
     <body>
@@ -66,9 +44,6 @@
                     </li>
                     <li>
                         <a href="#assertions" data-toggle="tab">Sign-in attempts</a>
-                    </li>
-                    <li>
-                        <a href="#flow" data-toggle="tab">Sign-in flow</a>
                     </li>
                 </ul>
 
@@ -216,13 +191,6 @@
                             <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
                         </div>
                     </div>
-
-
-                    <div id="flow" class="tab-pane form-inline">
-                        <h2>Sign-in and registration flow</h2>
-                        <p>A Sankey diagram visualizing the flow through the main interface components.
-                        </p>
-                        <div id="flow-chart"></div>
                 </div>
             </div>
         </div>
@@ -234,7 +202,6 @@
         <script type="text/javascript" src="js/lib/jquery.min.js"></script>
         <script type="text/javascript" src="js/lib/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/lib/d3.js"></script>
-        <script type="text/javascript" src="js/lib/sankey.js"></script>
         <script type="text/javascript" src="js/lib/rickshaw.js"></script>
         <script type="text/javascript" src="js/lib/dragslider.js"></script>
         <script type="text/javascript" src="js/dashboard.js"></script>
