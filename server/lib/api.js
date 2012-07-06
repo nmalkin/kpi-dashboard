@@ -130,3 +130,15 @@ exports.new_user = function(req, res) {
     getReport(reports.new_user, req, res);
 };
 
+/**
+ * Processes request for steps in new user flow
+ */
+exports.new_user_time = function(req, res) {
+    var start = getIntParamFromURL(req.url, 'start'),
+        end = getIntParamFromURL(req.url, 'end');
+
+    reports.new_user_time(start, end, function(result) {
+        resultToResponse(result, res);
+    });
+};
+

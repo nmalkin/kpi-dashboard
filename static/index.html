@@ -24,6 +24,33 @@
             .slider {
                 margin-top: 15px;
             }
+
+            #new_user_time .chart {
+                width: 800px;
+                margin: 20px auto;
+            }
+
+            #new_user_time .legend {
+                width: 300px;
+                padding: 10px;
+                border: 1px solid #000;
+            }
+
+            #new_user_time path {
+              stroke-width: 3px;
+              fill: none;
+            }
+            #new_user_time .tick line {
+                stroke-width: 1px;
+                stroke: #999;
+            }
+            #new_user_time .tick text {
+                fill: #000;
+                font-size: 10px;
+            }
+            #new_user_time .x-tick text {
+                transform: 'rotate(90, 0, 0)';
+            }
         </style>
     </head>
     <body>
@@ -37,6 +64,9 @@
             <div class="tabbable tabs-left">
                 <ul class="nav nav-tabs">
                     <li class="active">
+                        <a href="#new_user_time" data-toggle="tab">New user flow over time</a>
+                    </li>
+                    <li>
                         <a href="#new_user" data-toggle="tab">New user flow</a>
                     </li>
                     <li>
@@ -48,7 +78,19 @@
                 </ul>
 
                 <div class="tab-content">
-                    <div id="new_user" class="tab-pane active form-inline">
+                    <div id="new_user_time" class="tab-pane active form-inline">
+                        <h2>Can new users log in?</h2>
+                        <p>
+                            Tracks percentage of new users proceeding through each step of the sign-in flow over time.
+                        </p>
+
+                        <div class="chart"></div>
+                        <div class="legend">
+                            <h4>Legend</h4>
+                        </div>
+                    </div>
+
+                    <div id="new_user" class="tab-pane form-inline">
                         <h2>Can new users log in?</h2>
                         <p>
                             Tracks the progress of new users through the authentication flow.

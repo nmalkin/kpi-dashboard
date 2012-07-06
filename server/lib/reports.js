@@ -137,3 +137,62 @@ exports.new_user = function(segmentation, start, end, callback) {
         return stepData.length;
     }, callback);
 };
+
+/**
+ * Reports fraction of users at each step in the new user flow, over time
+ */
+exports.new_user_time = function(start, end, callback) {
+    data.getData(start, end, function(rawData) {
+        var dataByDate = dateAggregator(rawData);
+
+        for(var date in dataByDate) { // for each day:
+            if(dataByDate.hasOwnProperty(date)) {
+                // For each step, get all the data points that completed that step.
+                var steps = aggregate.aggregateData(dataByDate[date], data.newUserSteps);
+
+                // Make sure all steps are represented (set up empty ones if needed)
+                config.flows.new_user.forEach(function(step) {
+                    if(! (step[0] in steps)) {
+                        steps[step[0]] = [];
+                    }
+                });
+
+                // We don't actually need every data point at each step.
+                // What we want to know is, what percentage of users got to that step?
+
+                // Total number of users (on this date)
+                var total = steps[config.flows.new_user[0][0]].length;
+                total = Math.max(total, 1); // prevent divide-by-0 errors
+
+                // Replace data points with fraction of total
+                for(var step in steps) {
+                    if(steps.hasOwnProperty(step)) {
+                        steps[step] = steps[step].length / total;
+                    }
+                }
+
+                dataByDate[date] = steps;
+            }
+        }
+
+        // Pivot data
+        // (so that it's organized by step, then date; rather than date, step
+        var dataByStep = {};
+
+        for(var date in dataByDate) {
+            if(dataByDate.hasOwnProperty(date)) {
+                for(var step in dataByDate[date]) {
+                    if(dataByDate[date].hasOwnProperty(step)) {
+                        if(! (step in dataByStep)) {
+                            dataByStep[step] = {};
+                        }
+
+                        dataByStep[step][date] = dataByDate[date][step];
+                    }
+                }
+            }
+        }
+
+        callback(dataByStep);
+    });
+};

@@ -26,6 +26,13 @@ var DATA_URL = '/data/',
 var GRAPH_CONTAINER = '.chart';
 
 var _reports = {
+    // Report: new user flow over time
+    new_user_time:
+        {
+            kpi: 'new_user_time',
+            id: '#new_user_time',
+            tab: $('#new_user_time'),
+        },
     // Report: new user flow
     new_user:
         {
@@ -541,6 +548,114 @@ setupSegmentControls();
 getData('milestones', {}, function(data) {
     _milestones = data;
 });
+
+// Set up report for new user flow over time
+(function(report) {
+    d3.json(DATA_URL + report.kpi, function(rawData) {
+        var steps = Object.keys(rawData).sort();
+        var dates = Object.keys(rawData[steps[0]]).sort();
+        var data = steps.map(function(step) {
+            return dates.map(function(date) {
+                return rawData[step][date];
+            });
+        });
+
+        var width = 700,
+            height = 600,
+            padding = { vertical: 100, horizontal: 0 }
+        ;
+
+        var chart = d3.select(report.id + ' .chart')
+            .append('svg')
+            .attr('width', width + padding.horizontal)
+            .attr('height', height + padding.vertical)
+            .append('svg:g')
+            .attr('transform', 'translate(30,20)');
+
+        // Draw paths
+        var x = d3.scale.linear().domain([0, data[0].length - 1]).range([0, width]);
+        var y = d3.scale.linear().range([height, 0]);
+        var color = d3.scale.category10();
+
+        chart
+            .append('svg:g').attr('class', 'paths') // container for paths
+            .selectAll('path.line')
+            .data(data)
+            .enter()
+            .append('svg:path')
+            .attr('stroke', function(d,i) { return color(i); })
+            .attr('d',
+                d3.svg.line()
+                .x(function(d,i) { return x(i); } )
+                .y(function(d,i) { return y(d); } )
+            )
+        ;
+
+        // Draw y axis ticks and labels
+        var y_ticks = chart.append('g').attr('class', 'y-ticks')
+            .selectAll('.tick')
+            .data(y.ticks(10))
+            .enter()
+            .append('svg:g')
+            .attr('transform', function(d) { return 'translate(0, ' + y(d) + ')'; } )
+            .attr('class', 'tick')
+        ;
+
+        y_ticks.append('svg:line')
+            .attr('x1', 0)
+            .attr('y1', 0)
+            .attr('x2', width)
+            .attr('y2', 0)
+        ;
+
+        y_ticks.append('svg:text')
+            .text(function(d) { return Math.round(d * 100) + '%'; })
+            .attr('text-anchor', 'end')
+            .attr('dy', 2)
+            .attr('dx', -4)
+        ;
+
+        // Draw x axis ticks and labels
+        var x_ticks = chart.append('g').attr('class', 'x-ticks')
+            .selectAll('.tick')
+            .data(x.ticks(dates.length))
+            .enter()
+            .append('svg:g')
+            .attr('transform', function(d) { return 'translate(' + x(d) + ', ' + height + ')'; } )
+            .attr('class', 'tick x-tick')
+        ;
+
+        x_ticks.append('svg:line')
+            .attr('x1', 0)
+            .attr('y1', 0)
+            .attr('x2', 0)
+            .attr('y2', -1 * height)
+        ;
+
+        x_ticks.append('svg:text')
+            .data(dates)
+            .text(function(d,i) {
+                // Only show 10 labels
+                return (i % Math.floor(dates.length / 10) == 0) ? d : '';
+            })
+            .attr('dy', 0)
+            .attr('dx', 5)
+            .attr('transform', 'rotate(90)')
+        ;
+
+        // Legend
+        d3.select('body').select(report.id + ' .legend')
+            .selectAll('p')
+            .data(steps)
+            .enter()
+            .append('p')
+            .style('color', function(d,i) { return color(i); } )
+            .text(function(d) { return d; })
+        ;
+
+    });
+})(_reports.new_user_time);
+
 
 // Set up new user flow report
 (function(report) {
