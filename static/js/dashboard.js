@@ -332,8 +332,9 @@ function initStepGraph(report) {
  *     Note: the graph needs to be initialized for that to work.
  * @param {Array} an array of series objects (in Rickshaw format)
  */
-function updateGraph(report, newSeries) {
+function updateGraph(report) {
     // Rickshaw extends the prototype of the series array. Copy over the extension(s).
+    var newSeries = report.series;
     newSeries.active = report.graph.series.active;
 
     // Update the graph with the new series
@@ -385,7 +386,7 @@ function dateChanged(report) {
     }
 
     loadData(report, function() {
-        updateGraph(report, report.series);
+        updateGraph(report);
     });
 
     return true;
@@ -426,7 +427,7 @@ function cumulativeToggled(report) {
 
     if(cumulative) { // Load data and update graph
         loadData(report, function() {
-            updateGraph(report, report.series);
+            updateGraph(report);
         });
     } else {
         segmentationChanged(report);        
@@ -471,9 +472,11 @@ function updateDisplayedSegments(report) {
     // Rickshaw breaks on empty series, so give it a blank one instead.
     if(newSeries.length === 0) {
         return false;
+    } else {
+        report.series = newSeries;
     }
 
-    updateGraph(report, newSeries);
+    updateGraph(report);
     return true;
 }
 
