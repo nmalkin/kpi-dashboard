@@ -242,7 +242,7 @@ app.use(express.logger());
 
 app.get('/data', function(req,res) {
     res.contentType('application/json');
-    var WANT_COUNT = 1000;
+    var WANT_COUNT = 10000;
     var data = generate(WANT_COUNT);
     res.send(data);
 });
