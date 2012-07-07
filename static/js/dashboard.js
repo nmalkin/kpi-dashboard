@@ -32,6 +32,15 @@ var _reports = {
             kpi: 'new_user_time',
             id: '#new_user_time',
             tab: $('#new_user_time'),
+            dataToSeries: function(d) { return d; },
+            update: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
+            dimensions: {
+                width: 700,
+                height: 600,
+                padding: { vertical: 100, horizontal: 0 }
+            }
         },
     // Report: new user flow
     new_user:
@@ -40,6 +49,7 @@ var _reports = {
             tab: $('#new_user'),
             dataToSeries: null, // will be filled in during initialization
             graphDecorator: initStepGraph,
+            update: updateGraph,
             steps: [], // will hold the names of the steps
             total: 0, // will hold the total number of people report covers
             graph: null,
@@ -55,6 +65,7 @@ var _reports = {
             tab: $('#sites'),
             dataToSeries: dataToTimeSeries,
             graphDecorator: initTimeGraph,
+            update: updateGraph,
             graph: null,
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
@@ -68,6 +79,7 @@ var _reports = {
             tab: $('#assertions'),
             dataToSeries: dataToTimeSeries,
             graphDecorator: initTimeGraph,
+            update: updateGraph,
             graph: null,
             series: null,
             start: dateToTimestamp(EARLIEST_DATE),
@@ -234,11 +246,6 @@ function loadData(report, callback) {
     getData(report.kpi, options, function(data) {
         report.series = report.dataToSeries(data);
 
-        // If any series are empty, filter them out.
-        report.series = report.series.filter(function(series) {
-            return series.data.length > 0;
-        });
-
         callback();
     });
 }
@@ -333,8 +340,12 @@ function initStepGraph(report) {
  * @param {Array} an array of series objects (in Rickshaw format)
  */
 function updateGraph(report) {
+    // If any series are empty, filter them out.
+    var newSeries = report.series.filter(function(series) {
+        return series.data.length > 0;
+    });
+
     // Rickshaw extends the prototype of the series array. Copy over the extension(s).
-    var newSeries = report.series;
     newSeries.active = report.graph.series.active;
 
     // Update the graph with the new series
@@ -386,7 +397,7 @@ function dateChanged(report) {
     }
 
     loadData(report, function() {
-        updateGraph(report);
+        report.update(report);
     });
 
     return true;
@@ -553,61 +564,47 @@ getData('milestones', {}, function(data) {
 });
 
 // Set up report for new user flow over time
+
 (function(report) {
-    d3.json(DATA_URL + report.kpi, function(rawData) {
-        var steps = Object.keys(rawData).sort();
-        var dates = Object.keys(rawData[steps[0]]).sort();
-        var data = steps.map(function(step) {
-            return dates.map(function(date) {
-                return rawData[step][date];
-            });
-        });
-
-        var width = 700,
-            height = 600,
-            padding = { vertical: 100, horizontal: 0 }
-        ;
-
+    loadData(report, function() {
+        // Set up the svg element
         var chart = d3.select(report.id + ' .chart')
             .append('svg')
-            .attr('width', width + padding.horizontal)
-            .attr('height', height + padding.vertical)
+            .attr('width', report.dimensions.width + report.dimensions.padding.horizontal)
+            .attr('height', report.dimensions.height + report.dimensions.padding.vertical)
             .append('svg:g')
             .attr('transform', 'translate(30,20)');
 
-        // Draw paths
-        var x = d3.scale.linear().domain([0, data[0].length - 1]).range([0, width]);
-        var y = d3.scale.linear().range([height, 0]);
+        // Set up containers for paths, ticks, and labels
+        chart.append('svg:g').attr('class', 'paths');
+        chart.append('g').attr('class', 'y-ticks');
+        chart.append('g').attr('class', 'x-ticks');
+
+        var y = d3.scale.linear().range([report.dimensions.height, 0]);
         var color = d3.scale.category10();
 
-        chart
-            .append('svg:g').attr('class', 'paths') // container for paths
-            .selectAll('path.line')
-            .data(data)
-            .enter()
-            .append('svg:path')
-            .attr('stroke', function(d,i) { return color(i); })
-            .attr('d',
-                d3.svg.line()
-                .x(function(d,i) { return x(i); } )
-                .y(function(d,i) { return y(d); } )
-            )
-        ;
-
         // Draw y axis ticks and labels
-        var y_ticks = chart.append('g').attr('class', 'y-ticks')
+        var y_ticks = chart.select('.y-ticks')
             .selectAll('.tick')
             .data(y.ticks(10))
+        ;
+
+        y_ticks
             .enter()
             .append('svg:g')
             .attr('transform', function(d) { return 'translate(0, ' + y(d) + ')'; } )
             .attr('class', 'tick')
         ;
 
+        y_ticks
+            .exit()
+            .remove()
+        ;
+
         y_ticks.append('svg:line')
             .attr('x1', 0)
             .attr('y1', 0)
-            .attr('x2', width)
+            .attr('x2', report.dimensions.width)
             .attr('y2', 0)
         ;
 
@@ -618,35 +615,8 @@ getData('milestones', {}, function(data) {
             .attr('dx', -4)
         ;
 
-        // Draw x axis ticks and labels
-        var x_ticks = chart.append('g').attr('class', 'x-ticks')
-            .selectAll('.tick')
-            .data(x.ticks(dates.length))
-            .enter()
-            .append('svg:g')
-            .attr('transform', function(d) { return 'translate(' + x(d) + ', ' + height + ')'; } )
-            .attr('class', 'tick x-tick')
-        ;
-
-        x_ticks.append('svg:line')
-            .attr('x1', 0)
-            .attr('y1', 0)
-            .attr('x2', 0)
-            .attr('y2', -1 * height)
-        ;
-
-        x_ticks.append('svg:text')
-            .data(dates)
-            .text(function(d,i) {
-                // Only show 10 labels
-                return (i % Math.floor(dates.length / 10) == 0) ? d : '';
-            })
-            .attr('dy', 0)
-            .attr('dx', 5)
-            .attr('transform', 'rotate(90)')
-        ;
-
         // Legend
+        var steps = Object.keys(report.series).sort();
         d3.select('body').select(report.id + ' .legend')
             .selectAll('p')
             .data(steps)
@@ -656,6 +626,91 @@ getData('milestones', {}, function(data) {
             .text(function(d) { return d; })
         ;
 
+        _reports.new_user_time.update = function(report) {
+            var rawData = report.series;
+
+            var dates = Object.keys(rawData[steps[0]]).sort();
+            var data = steps.map(function(step) {
+                return dates.map(function(date) {
+                    return rawData[step][date];
+                });
+            });
+
+            // Draw paths
+            var x = d3.scale.linear().domain([0, data[0].length - 1]).range([0, report.dimensions.width]);
+
+            var lines = chart
+                .select('.paths')
+                .selectAll('path')
+                .data(data);
+            
+            lines
+                .enter()
+                .append('svg:path')
+                .attr('stroke', function(d,i) { return color(i); })
+                .attr('d',
+                    d3.svg.line()
+                    .x(function(d,i) { return x(i); } )
+                    .y(function(d,i) { return y(d); } )
+                )
+            ;
+
+            lines
+                .attr('d',
+                    d3.svg.line()
+                    .x(function(d,i) { return x(i); } )
+                    .y(function(d,i) { return y(d); } )
+                )
+
+            lines
+                .exit()
+                .remove()
+            ;
+
+
+            // Draw x axis ticks and labels
+            var x_ticks = chart.select('.x-ticks')
+                .selectAll('.tick')
+                .data(dates, function(d) { return d; } );
+
+            var xEnter = x_ticks
+                .enter()
+                .append('svg:g')
+                .attr('transform', function(d,i) { return 'translate(' + x(i) + ', ' + report.dimensions.height + ')'; } )
+                .attr('class', 'tick x-tick')
+            ;
+
+            xEnter.append('svg:line')
+                .attr('x1', 0)
+                .attr('y1', 0)
+                .attr('x2', 0)
+                .attr('y2', -1 * report.dimensions.height)
+            ;
+
+            xEnter.append('svg:text')
+                .attr('dy', 0)
+                .attr('dx', 5)
+                .attr('transform', 'rotate(90)')
+            ;
+
+            x_ticks
+                .exit()
+                .remove()
+            ;
+
+            x_ticks
+                .attr('transform', function(d,i) { return 'translate(' + x(i) + ', ' + report.dimensions.height + ')'; } )
+            ;
+
+            var numTicks = Math.min(10, dates.length);
+            chart.selectAll('.x-tick text')
+                .text(function(d,i) {
+                    return (i % Math.floor(dates.length / numTicks) == 0) ? d : '';
+                })
+
+        };
+
+        report.update(report);
     });
 })(_reports.new_user_time);
 

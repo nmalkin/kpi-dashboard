@@ -31,6 +31,7 @@
             }
 
             #new_user_time .legend {
+                float: right;
                 width: 300px;
                 padding: 10px;
                 border: 1px solid #000;
@@ -85,9 +86,21 @@
                         </p>
 
                         <div class="chart"></div>
+
                         <div class="legend">
                             <h4>Legend</h4>
                         </div>
+
+                        <div class="date-select">
+                            <p>
+                                From
+                                <input type="date" class="start" placeholder="YYYY-MM-DD">
+                                to
+                                <input type="date" class="end" placeholder="YYYY-MM-DD">
+                            </p>
+                            <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                        </div>
+
                     </div>
 
                     <div id="new_user" class="tab-pane form-inline">
