@@ -62,6 +62,25 @@ exports.getTimestamp = function(datum) {
 };
 
 /**
+ * Converts Unix time to a string with the respective date (but not time).
+ *     The output is a string representing the date that this time falls on.
+ *     This is used for bucket-izing, so the exact format is not important.
+ * @param {Integer} seconds since epoch
+ * @return {String} the date on which this time falls, in the format YYYY-MM-DD
+ */
+function getDateStringFromUnixTime(seconds) {
+    var date = new Date(seconds * 1000); // Date constructor takes milliseconds
+    return date.toISOString().substr(0, 10);
+}
+
+/**
+ * Returns the date of the given data point, in the format YYYY-MM-DD
+ */
+exports.getDate = function(datum) {
+    return getDateStringFromUnixTime(exports.getTimestamp(datum));
+};
+
+/**
  * Given a data point, returns number of sites logged in
  * @param {Object} datum data point to extract information from
  * @return {Integer} number of sites logged in, or 0 if this field is missing
