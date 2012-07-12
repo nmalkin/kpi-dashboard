@@ -56,7 +56,7 @@ exports.getData = function(start, end, callback) {
  * @return {Integer} seconds since epoch
  */
 exports.getTimestamp = function(datum) {
-    return Math.floor(datum.timestamp / 1000);
+    return Math.floor(datum.value.timestamp / 1000);
         // XXX: kpiggybank has timestamps in milliseconds, so we convert them to seconds.
         // If we fix that, this will need to change. See https://github.com/mozilla/browserid/issues/1732
 };
@@ -67,7 +67,7 @@ exports.getTimestamp = function(datum) {
  * @return {Integer} number of sites logged in, or 0 if this field is missing
  */
 exports.getNumberSitesLoggedIn = function(datum) {
-    return datum.number_sites_logged_in || 0;
+    return datum.value.number_sites_logged_in || 0;
 };
 
 /**
@@ -98,13 +98,13 @@ exports.getSegmentation = function(metric, datum) {
 
     switch(metric) {
         case "OS":
-            if('user_agent' in datum) value = datum.user_agent.os;
+            if('user_agent' in datum.value) value = datum.value.user_agent.os;
             break;
         case "Browser":
-            if('user_agent' in datum) value = datum.user_agent.browser;
+            if('user_agent' in datum.value) value = datum.value.user_agent.browser;
             break;
         case "Locale":
-            value = datum.lang;
+            value = datum.value.lang;
             break;
     }
 
@@ -119,7 +119,7 @@ exports.getSegmentation = function(metric, datum) {
  * Given a data point, returns a list of [only the] names of all events it contains.
  */
 function eventList(datum) {
-    return datum.event_stream.map(function(eventPair) {
+    return datum.value.event_stream.map(function(eventPair) {
         return eventPair[0];
     });
 }

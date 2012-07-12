@@ -41,10 +41,6 @@ the [KPI Backend](https://wiki.mozilla.org/Privacy/Reviews/KPI_Backend).
 backend that provides an interface for storing and retrieving this data. The
 KPI Dashboard will use KPIggybank's interface for accessing the data.
 
-_Note:_
-At present, the data returned by KPIggybank has a format slightly different
-from that expected by KPI Dashboard.
-
 The location of the data server is defined in the configuration file found in
 `server/config/config.json`.
 
