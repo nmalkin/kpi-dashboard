@@ -11,10 +11,8 @@ var fs = require('fs');
  * @param {function} callback the callback to call with the data
  */
 function readFile(filename, callback) {
-    fs.readFile(__dirname + filename, 'utf-8', function(err, data) {
-        if(err) throw err;
-        callback(JSON.parse(data));
-    });
+    var data = fs.readFileSync(__dirname + filename, 'utf-8');
+    callback(JSON.parse(data));
 }
 
 /**
