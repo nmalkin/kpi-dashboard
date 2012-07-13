@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+"use strict";
+
+var db = require('../lib/db');
+db.populateDatabase();
