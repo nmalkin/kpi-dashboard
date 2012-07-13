@@ -50,10 +50,13 @@ run it using the command `npm run-script data`.
 
 Prerequisites
 -------------
-The KPI dashboard run on [NodeJS](http://www.nodejs.org/).
+The KPI dashboard runs on [NodeJS](http://www.nodejs.org/).
 
 Once you have Node and [npm](http://npmjs.org/), you can install additional
 dependencies by running the command `npm install`.
+
+We also require a running installation of [CouchDB](http://couchdb.apache.org/).
+
 
 Running
 -------
