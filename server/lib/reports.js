@@ -106,6 +106,7 @@ exports.assertions = function(segmentation, start, end, callback) {
  * Reports the number of users at each step in the sign-in flow for new users
  */
 exports.new_user = function(segmentation, start, end, callback) {
+if(segmentation) { // TODO: no support for segmentation yet; use legacy code
     summaryReport(segmentation, start, end,
     function(rawData) {
         // Place data into buckets by step in the flow
@@ -126,6 +127,36 @@ exports.new_user = function(segmentation, start, end, callback) {
         // use the number of data points = number of users at each step
         return stepData.length;
     }, callback);
+} else {
+    var dbOptions = {
+        group: false
+    };
+
+    // Convert timestamps to dates
+    if(start) {
+        dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+        dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+
+    db.view('new_user', dbOptions, function(response) {
+        if(response.length !== 1) {
+            console.log('Error: unexpected result from database', response);
+            return;
+        }
+
+        var rawData = response[0];
+
+        var steps = Object.keys(rawData.value);
+        var result = { Total:
+            steps.map(function(step) {
+                return { category: step, value: rawData.value[step] };
+            })
+        };
+        callback(result);
+    });
+}
 };
 
 /**

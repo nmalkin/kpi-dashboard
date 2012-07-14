@@ -73,6 +73,44 @@ var VIEWS = {
                 };
             }
         }
+    },
+
+    new_user: {
+        map: function(doc) {
+            if(doc.newUserSteps.length > 0) { // Only count new users
+                doc.newUserSteps.forEach(function(step) {
+                    emit(doc.date, step);
+                });
+            }
+        },
+
+        reduce: function(keys, values, rereduce) {
+            if(rereduce) {
+                return values.reduce(function(accumulated, current) {
+                    var steps = Object.keys(current);
+                    steps.forEach(function(step) {
+                        if(! (step in accumulated)) {
+                            accumulated[step] = 0;
+                        }
+
+                        accumulated[step] = accumulated[step] + current[step];
+                    });
+
+                    return accumulated;
+                }, {});
+            } else {
+                var steps = {};
+                values.forEach(function(step) {
+                    if(! (step in steps)) {
+                        steps[step] = 0;
+                    }
+
+                    steps[step]++;
+                });
+
+                return steps;
+            }
+        }
     }
 };
 
