@@ -483,11 +483,18 @@ function updateDisplayedSegments(report) {
     // Rickshaw breaks on empty series, so give it a blank one instead.
     if(newSeries.length === 0) {
         return false;
-    } else {
-        report.series = newSeries;
     }
 
+    // Temporarily overwrite full series with filtered series,
+    // so that updateGraph can get at them.
+    var allSeries = report.series;
+    report.series = newSeries;
+
     updateGraph(report);
+
+    // Restore full series
+    report.series = allSeries;
+
     return true;
 }
 
