@@ -131,7 +131,7 @@ exports.getSegmentation = function(metric, datum) {
 exports.getKnownSegmentation = function(metric, datum) {
     var segments = exports.getSegmentations()[metric];
     var segment = exports.getSegmentation(metric, datum);
-    return segments.indexOf(segment) === -1 ? [ 'Other' ] : [ segment ];
+    return segments.indexOf(segment) === -1 ? 'Other' : segment;
 };
 
 /**
