@@ -111,6 +111,58 @@ var VIEWS = {
                 return steps;
             }
         }
+    },
+
+    new_user_OS: {
+        map: function(doc) {
+            if(doc.newUserSteps.length > 0) {
+                doc.newUserSteps.forEach(function(step) {
+                    emit(doc.date, {
+                        step: step,
+                        segment: doc.OS
+                    });
+                });
+            }
+        },
+
+        reduce: function(keys, values, rereduce) {
+            if(rereduce) {
+                return values.reduce(function(accumulated, current) {
+                    var segments = Object.keys(current);
+                    segments.forEach(function(segment) {
+                        if(! (segment in accumulated)) {
+                            accumulated[segment] = {};
+                        }
+
+                        var steps = Object.keys(current[segment]);
+                        steps.forEach(function(step) {
+                            if(! (step in accumulated[segment])) {
+                                accumulated[segment][step] = 0;
+                            }
+
+                            accumulated[segment][step] = accumulated[segment][step] + current[segment][step];
+                        });
+                    });
+
+                    return accumulated;
+                }, {});
+            } else {
+                var segments = {};
+                values.forEach(function(value) {
+                    if(! (value.segment in segments)) {
+                        segments[value.segment] = {};
+                    }
+
+                    if(! (value.step in segments[value.segment])) {
+                        segments[value.segment][value.step] = 0;
+                    }
+
+                    segments[value.segment][value.step]++;
+                });
+
+                return segments;
+            }
+        }
     }
 };
 
@@ -172,6 +224,11 @@ exports.populateDatabase = function() {
             // Pre-compute certain values for the report (not already in the datum)
             datum.value.newUserSteps = data.newUserSteps(datum);
             datum.value.date = data.getDate(datum);
+            // including segmentations
+            var segmentations = Object.keys(data.getSegmentations());
+            segmentations.forEach(function(segmentation) {
+                datum.value[segmentation] = data.getSegmentation(segmentation, datum);
+            });
 
             // Insert it into the database
             // Conveniently, it already has a UUID, from the last time it was in CouchDB.
