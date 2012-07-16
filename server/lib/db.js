@@ -112,59 +112,82 @@ var VIEWS = {
             }
         }
     },
+};
 
-    new_user_OS: {
-        map: function(doc) {
-            if(doc.newUserSteps.length > 0) {
-                doc.newUserSteps.forEach(function(step) {
-                    emit(doc.date, {
-                        step: step,
-                        segment: doc.OS
-                    });
+/**
+ * Returns a function, to be used in CouchDB to map data by the given segmentation
+ *     The map-by-segmentation functions are identical, except for the
+ *     segmentation being mapped. Because CouchDB doesn't support closures,
+ *     we take the somewhat hacky approach of converting the function to a
+ *     string (which was going to happen anyway) and replacing the name of the
+ *     segmentation with the one we want.
+ */
+var getMapBySegment = function(segmentation) {
+    return function(doc) {
+        if(doc.newUserSteps.length > 0) {
+            doc.newUserSteps.forEach(function(step) {
+                emit(doc.date, {
+                    step: step,
+                    segment: doc["---SEGMENTATION---"]
                 });
-            }
-        },
-
-        reduce: function(keys, values, rereduce) {
-            if(rereduce) {
-                return values.reduce(function(accumulated, current) {
-                    var segments = Object.keys(current);
-                    segments.forEach(function(segment) {
-                        if(! (segment in accumulated)) {
-                            accumulated[segment] = {};
-                        }
-
-                        var steps = Object.keys(current[segment]);
-                        steps.forEach(function(step) {
-                            if(! (step in accumulated[segment])) {
-                                accumulated[segment][step] = 0;
-                            }
-
-                            accumulated[segment][step] = accumulated[segment][step] + current[segment][step];
-                        });
-                    });
-
-                    return accumulated;
-                }, {});
-            } else {
-                var segments = {};
-                values.forEach(function(value) {
-                    if(! (value.segment in segments)) {
-                        segments[value.segment] = {};
-                    }
-
-                    if(! (value.step in segments[value.segment])) {
-                        segments[value.segment][value.step] = 0;
-                    }
-
-                    segments[value.segment][value.step]++;
-                });
-
-                return segments;
-            }
+            });
         }
+    }.toString().replace('---SEGMENTATION---', segmentation);
+};
+
+/**
+ * Reduce function to be used in CouchDB to aggregate segmented data
+ */
+var reduceBySegment = function(keys, values, rereduce) {
+    if(rereduce) {
+        return values.reduce(function(accumulated, current) {
+            var segments = Object.keys(current);
+            segments.forEach(function(segment) {
+                if(! (segment in accumulated)) {
+                    accumulated[segment] = {};
+                }
+
+                var steps = Object.keys(current[segment]);
+                steps.forEach(function(step) {
+                    if(! (step in accumulated[segment])) {
+                        accumulated[segment][step] = 0;
+                    }
+
+                    accumulated[segment][step] = accumulated[segment][step] + current[segment][step];
+                });
+            });
+
+            return accumulated;
+        }, {});
+    } else {
+        var segments = {};
+        values.forEach(function(value) {
+            if(! (value.segment in segments)) {
+                segments[value.segment] = {};
+            }
+
+            if(! (value.step in segments[value.segment])) {
+                segments[value.segment][value.step] = 0;
+            }
+
+            segments[value.segment][value.step]++;
+        });
+
+        return segments;
     }
 };
+
+// Add per-segmentation views
+// ... for new user report
+(function() {
+    var segmentations = Object.keys(data.getSegmentations());
+    segmentations.forEach(function(segmentation) {
+        VIEWS['new_user_' + segmentation] = {
+            map: getMapBySegment(segmentation),
+            reduce: reduceBySegment
+        };
+    });
+})();
 
 /** Design document */
 var DOCUMENT = {

@@ -106,28 +106,6 @@ exports.assertions = function(segmentation, start, end, callback) {
  * Reports the number of users at each step in the sign-in flow for new users
  */
 exports.new_user = function(segmentation, start, end, callback) {
-if(segmentation && segmentation !== 'OS') { // TODO: no support for segmentation yet; use legacy code
-    summaryReport(segmentation, start, end,
-    function(rawData) {
-        // Place data into buckets by step in the flow
-        var aggregatedData = aggregate.aggregateData(rawData, data.newUserSteps);
-
-        // We want to make sure there's a bucket for each step in the flow,
-        // even if it is empty. (That way, the report looks consistent,
-        // and we're providing the user with a list of all steps.)
-        config.flows.new_user.forEach(function(step) {
-            if(! (step[0] in aggregatedData)) {
-                aggregatedData[step[0]] = [];
-            }
-        });
-
-        return aggregatedData;
-    },
-    function(stepData) { // to summarize each step's data,
-        // use the number of data points = number of users at each step
-        return stepData.length;
-    }, callback);
-} else {
     var dbOptions = {
         group: false
     };
@@ -179,7 +157,6 @@ if(segmentation && segmentation !== 'OS') { // TODO: no support for segmentation
             callback(result);
         });
     }
-}
 };
 
 /**
