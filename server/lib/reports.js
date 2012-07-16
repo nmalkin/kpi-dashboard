@@ -95,12 +95,49 @@ exports.sites = function(segmentation, start, end, callback) {
  * @see summaryReport for parameter documentation
  */
 exports.assertions = function(segmentation, start, end, callback) {
-    summaryReport(segmentation, start, end, dateAggregator,
-    function(dayData) { // to summarize each day's data,
-        // use the number of data points ~= number of assertions generated ~= login attempts
-        return dayData.length;
-    }, callback);
-};
+    var dbOptions = {
+        group: true
+    };
+
+    // Convert timestamps to dates
+    if(start) {
+        dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+        dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+
+    if(segmentation) {
+        db.view('assertions_' + segmentation, dbOptions, function(response) {
+            var result = {};
+            response.forEach(function(row) {
+                var date = row.key;
+                var segments = Object.keys(row.value);
+                segments.forEach(function(segment) {
+                    if(! (segment in result)) {
+                        result[segment] = [];
+                    }
+
+                    result[segment].push({
+                        category: date,
+                        value: row.value[segment]
+                    });
+                });
+            });
+
+            callback(result);
+        });
+    } else {
+        db.view('assertions', dbOptions, function(response) {
+            var result = { Total:
+                response.map(function(row) {
+                    return { category: row.key, value: row.value };
+                })
+            };
+
+            callback(result);
+        });
+    }};
 
 /**
  * Reports the number of users at each step in the sign-in flow for new users

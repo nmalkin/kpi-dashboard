@@ -112,6 +112,14 @@ var VIEWS = {
             }
         }
     },
+
+    assertions: {
+        map: function(doc) {
+            emit(doc.date, 1);
+        },
+
+        reduce: '_count'
+    }
 };
 
 /** Initialize new user flow report */
@@ -182,6 +190,51 @@ var VIEWS = {
     var segmentations = Object.keys(data.getSegmentations());
     segmentations.forEach(function(segmentation) {
         VIEWS['new_user_' + segmentation] = {
+            map: getMapBySegment(segmentation),
+            reduce: reduceBySegment
+        };
+    });
+})();
+
+/** Initialize assertions report */
+(function() {
+    var getMapBySegment = function(segmentation) {
+        return function(doc) {
+            emit(doc.date, doc["---SEGMENTATION---"]);
+        }.toString().replace('---SEGMENTATION---', segmentation);
+    };
+
+    var reduceBySegment = function(keys, values, rereduce) {
+        if(rereduce) {
+            return values.reduce(function(accumulated, current) {
+                var segments = Object.keys(current);
+                segments.forEach(function(segment) {
+                    if(! (segment in accumulated)) {
+                        accumulated[segment] = 0;
+                    }
+
+                    accumulated[segment] = accumulated[segment] + current[segment];
+                });
+
+                return accumulated;
+            }, {});
+        } else {
+            var segments = {};
+            values.forEach(function(value) {
+                if(! (value in segments)) {
+                    segments[value] = 0;
+                }
+
+                segments[value]++;
+            });
+
+            return segments;
+        }
+    };
+
+    var segmentations = Object.keys(data.getSegmentations());
+    segmentations.forEach(function(segmentation) {
+        VIEWS['assertions_' + segmentation] = {
             map: getMapBySegment(segmentation),
             reduce: reduceBySegment
         };
