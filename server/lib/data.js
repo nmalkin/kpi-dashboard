@@ -124,6 +124,17 @@ exports.getSegmentation = function(metric, datum) {
 };
 
 /**
+ * For given data point, returns value of given metric, if it is known
+ *     (i.e., listed in the config file). Otherwise, returns "Other".
+ * @see getSegmentation
+ */
+exports.getKnownSegmentation = function(metric, datum) {
+    var segments = exports.getSegmentations()[metric];
+    var segment = exports.getSegmentation(metric, datum);
+    return segments.indexOf(segment) === -1 ? [ 'Other' ] : [ segment ];
+};
+
+/**
  * Given a data point, returns a list of [only the] names of all events it contains.
  */
 function eventList(datum) {

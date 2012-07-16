@@ -250,7 +250,7 @@ exports.populateDatabase = function() {
             // including segmentations
             var segmentations = Object.keys(data.getSegmentations());
             segmentations.forEach(function(segmentation) {
-                datum.value[segmentation] = data.getSegmentation(segmentation, datum);
+                datum.value[segmentation] = data.getKnownSegmentation(segmentation, datum);
             });
 
             // Insert it into the database
