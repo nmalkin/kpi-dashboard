@@ -119,6 +119,14 @@ var VIEWS = {
         },
 
         reduce: '_count'
+    },
+
+    sites: {
+        map: function(doc) {
+            emit(doc.date, doc.number_sites_logged_in);
+        },
+
+        reduce: '_stats'
     }
 };
 
@@ -237,6 +245,24 @@ var VIEWS = {
         VIEWS['assertions_' + segmentation] = {
             map: getMapBySegment(segmentation),
             reduce: reduceBySegment
+        };
+    });
+})();
+
+/** Initialize sites report */
+(function() {
+    var getMapBySegment = function(segmentation) {
+        return function(doc) {
+            emit([doc.date, doc["---SEGMENTATION---"]], doc.number_sites_logged_in);
+        }.toString().replace('---SEGMENTATION---', segmentation);
+
+    };
+
+    var segmentations = Object.keys(data.getSegmentations());
+    segmentations.forEach(function(segmentation) {
+        VIEWS['sites_' + segmentation] = {
+            map: getMapBySegment(segmentation),
+            reduce: '_stats'
         };
     });
 })();

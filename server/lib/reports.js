@@ -82,11 +82,59 @@ function summaryReport(segmentation, start, end, aggregator, summarizer, callbac
  * @see summaryReport for parameter documentation
  */
 exports.sites = function(segmentation, start, end, callback) {
-    summaryReport(segmentation, start, end, dateAggregator,
-    function(dayData) { // to summarize each day's data,
-        // find the median number of sites users are logged in to
-        return aggregate.median(dayData.map(data.getNumberSitesLoggedIn));
-    }, callback);
+    var dbOptions = {
+        group: true
+    };
+
+    if(segmentation) {
+        if(start) {
+            dbOptions.startkey = [ util.getDateStringFromUnixTime(start) ];
+            // Note that the key is in an array, and we are omitting the second key (segment).
+        }
+        if(end) {
+            dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
+        }
+
+        db.view('sites_' + segmentation, dbOptions, function(response) {
+            var result = {};
+            response.forEach(function(row) {
+                var date = row.key[0],
+                    segment = row.key[1],
+                    mean = row.value.sum / row.value.count;
+
+                if(! (segment in result)) {
+                    result[segment] = [];
+                }
+
+                result[segment].push({
+                    category: date,
+                    value: mean
+                });
+            });
+
+            callback(result);
+        });
+    } else {
+        if(start) {
+            dbOptions.startkey = util.getDateStringFromUnixTime(start);
+        }
+        if(end) {
+            dbOptions.endkey = util.getDateStringFromUnixTime(end);
+        }
+
+        db.view('sites', dbOptions, function(response) {
+            var dates = [];
+            response.forEach(function(row) {
+                var stats = row.value;
+                dates.push({
+                    category: row.key, // date
+                    value: stats.sum / stats.count // mean
+                });
+            });
+
+           callback({ Total: dates });
+        });
+    }
 };
 
 
