@@ -164,4 +164,9 @@ exports.newUserSteps = function(datum) {
     return steps;
 };
 
-
+/** Returns the names of all steps in the new user flow */
+exports.newUserStepNames = function() {
+    return config.flows.new_user.map(function(step) {
+        return step[0];
+    });
+};
