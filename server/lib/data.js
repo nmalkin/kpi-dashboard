@@ -1,6 +1,7 @@
 "use strict";
 
 var config = require('./config'),
+    util = require('./util'),
     http = require('http');
 
 /**
@@ -56,9 +57,16 @@ exports.getData = function(start, end, callback) {
  * @return {Integer} seconds since epoch
  */
 exports.getTimestamp = function(datum) {
-    return Math.floor(datum.timestamp / 1000);
+    return Math.floor(datum.value.timestamp / 1000);
         // XXX: kpiggybank has timestamps in milliseconds, so we convert them to seconds.
         // If we fix that, this will need to change. See https://github.com/mozilla/browserid/issues/1732
+};
+
+/**
+ * Returns the date of the given data point, in the format YYYY-MM-DD
+ */
+exports.getDate = function(datum) {
+    return util.getDateStringFromUnixTime(exports.getTimestamp(datum));
 };
 
 /**
@@ -67,7 +75,7 @@ exports.getTimestamp = function(datum) {
  * @return {Integer} number of sites logged in, or 0 if this field is missing
  */
 exports.getNumberSitesLoggedIn = function(datum) {
-    return datum.number_sites_logged_in || 0;
+    return datum.value.number_sites_logged_in || 0;
 };
 
 /**
@@ -98,13 +106,13 @@ exports.getSegmentation = function(metric, datum) {
 
     switch(metric) {
         case "OS":
-            if('user_agent' in datum) value = datum.user_agent.os;
+            if('user_agent' in datum.value) value = datum.value.user_agent.os;
             break;
         case "Browser":
-            if('user_agent' in datum) value = datum.user_agent.browser;
+            if('user_agent' in datum.value) value = datum.value.user_agent.browser;
             break;
         case "Locale":
-            value = datum.lang;
+            value = datum.value.lang;
             break;
     }
 
@@ -116,10 +124,21 @@ exports.getSegmentation = function(metric, datum) {
 };
 
 /**
+ * For given data point, returns value of given metric, if it is known
+ *     (i.e., listed in the config file). Otherwise, returns "Other".
+ * @see getSegmentation
+ */
+exports.getKnownSegmentation = function(metric, datum) {
+    var segments = exports.getSegmentations()[metric];
+    var segment = exports.getSegmentation(metric, datum);
+    return segments.indexOf(segment) === -1 ? 'Other' : segment;
+};
+
+/**
  * Given a data point, returns a list of [only the] names of all events it contains.
  */
 function eventList(datum) {
-    return datum.event_stream.map(function(eventPair) {
+    return datum.value.event_stream.map(function(eventPair) {
         return eventPair[0];
     });
 }
@@ -145,4 +164,9 @@ exports.newUserSteps = function(datum) {
     return steps;
 };
 
-
+/** Returns the names of all steps in the new user flow */
+exports.newUserStepNames = function() {
+    return config.flows.new_user.map(function(step) {
+        return step[0];
+    });
+};

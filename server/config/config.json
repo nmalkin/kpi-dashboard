@@ -4,6 +4,11 @@
         "port": 3435,
         "path": "/data"
     },
+    "database_server": {
+        "host": "localhost",
+        "port": 5984,
+        "database": "kpi_dashboard"
+    },
     "segmentations": {
         "OS": [ "Windows 7", "Windows XP", "Macintosh", "Linux", "Android" ],
         "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],
