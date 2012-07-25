@@ -1,6 +1,7 @@
 {
     "node" : true,
     "browser" : true,
+    "couch": true,
 
     "devel": true,
     "eqeqeq": true,

@@ -41,10 +41,6 @@ the [KPI Backend](https://wiki.mozilla.org/Privacy/Reviews/KPI_Backend).
 backend that provides an interface for storing and retrieving this data. The
 KPI Dashboard will use KPIggybank's interface for accessing the data.
 
-_Note:_
-At present, the data returned by KPIggybank has a format slightly different
-from that expected by KPI Dashboard.
-
 The location of the data server is defined in the configuration file found in
 `server/config/config.json`.
 
@@ -54,10 +50,13 @@ run it using the command `npm run-script data`.
 
 Prerequisites
 -------------
-The KPI dashboard run on [NodeJS](http://www.nodejs.org/).
+The KPI dashboard runs on [NodeJS](http://www.nodejs.org/).
 
 Once you have Node and [npm](http://npmjs.org/), you can install additional
 dependencies by running the command `npm install`.
+
+We also require a running installation of [CouchDB](http://couchdb.apache.org/).
+
 
 Running
 -------

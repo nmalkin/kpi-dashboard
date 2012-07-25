@@ -12,6 +12,7 @@
         "node": ">=0.4"
     },
     "dependencies": {
+        "cradle": "0.6.x",
         "express": "latest"
     }
 }

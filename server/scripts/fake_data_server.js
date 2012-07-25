@@ -155,6 +155,21 @@ function randomTimestamp() {
     return timestamp;
 }
 
+/**
+ * Returns a fake UUID
+ *     Fake, because, apparently, JavaScript can't generate identifiers
+ *     that are truly *globally* unique.
+ *
+ *     Code from: http://stackoverflow.com/a/2117523
+ *     Also see discussion there
+ */
+function fakeUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+}
+
 /*
  * Returns a randomly generated (but not non-sensical) sequence of events.
  * There are three aspects to the randomness:
@@ -204,7 +219,7 @@ function generateOne() {
         os = selectRandom(OS),
         browser = selectRandom(BROWSER);
 
-    var d = 
+    var value = 
     {
       //"_id": "e3e09710186f21c0d862b8032a294351",
       //"_rev": "1-d03ac3646fd5f62e86923c97ba19cc2b",
@@ -225,7 +240,11 @@ function generateOne() {
       "number_sites_logged_in": randInt(13)
     };
 
-    return d;
+    return {
+        id: fakeUUID(),
+        //key: ,
+        value: value
+    };
 }
 
 function generate(number) {
