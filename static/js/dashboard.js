@@ -826,7 +826,7 @@ $('input[type=date].end').val(LATEST_DATE);
         min: startTime,
         max: endTime,
         values: [startTime, endTime],
-        slide: function(event, ui) { // Update date boxes when slider moves
+        stop: function(event, ui) { // Update date boxes when slider moves
             var report = targetReport(event.target);
 
             var startDate = timestampToDate(ui.values[0]);
