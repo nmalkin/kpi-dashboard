@@ -237,7 +237,7 @@ function generateOne() {
       //"url": "/wsapi/interaction_data/?id=e3e09710186f21c0d862b8032a294351",
       //"duration": Math.random() * 30,
       //"readableDate": "2012 09:30:00-Jun-12"
-      "number_sites_logged_in": randInt(13)
+      "number_sites_signed_in": randInt(13)
     };
 
     return {

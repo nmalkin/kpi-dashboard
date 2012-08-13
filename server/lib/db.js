@@ -325,6 +325,14 @@ exports.populateDatabase = function() {
             // Pre-compute certain values for the report (not already in the datum)
             datum.value.newUserSteps = data.newUserSteps(datum);
             datum.value.date = data.getDate(datum);
+
+            // Handle all kinds of sites-logged-in KPIs
+            datum.value.number_sites_logged_in = // Make sure there is *some* value.
+                datum.value.number_sites_logged_in ||
+                datum.value.sites_signed_in ||
+                datum.value.number_sites_signed_in ||
+                0;
+
             // including segmentations
             var segmentations = Object.keys(data.getSegmentations());
             segmentations.forEach(function(segmentation) {
