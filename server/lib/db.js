@@ -322,6 +322,11 @@ function initDatabase(callback) {
 exports.populateDatabase = function() {
     data.getData(null, null, function(rawData) {
         rawData.forEach(function(datum) {
+            // Ignore blobs with empty event streams: they are the result of errors
+            if(datum.value.event_stream.length === 0) {
+                return;
+            }
+
             // Pre-compute certain values for the report (not already in the datum)
             datum.value.newUserSteps = data.newUserSteps(datum);
             datum.value.date = data.getDate(datum);
