@@ -111,6 +111,17 @@ exports.getSegmentation = function(metric, datum) {
         case "Browser":
             if('user_agent' in datum.value) value = datum.value.user_agent.browser;
             break;
+        case "Screen":
+            if('screen_size' in datum.value && 'width' in datum.value.screen_size) {
+                value =
+                    datum.value.screen_size.width +
+                    '×' +
+                    datum.value.screen_size.height;
+            } else {
+                value = "Unknown";
+            }
+
+            break;
         case "Locale":
             value = datum.value.lang;
             break;
