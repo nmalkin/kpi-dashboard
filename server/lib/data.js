@@ -122,6 +122,17 @@ exports.getSegmentation = function(metric, datum) {
             }
 
             break;
+        case "Emails":
+            if('number_emails' in datum.value) {
+                if(datum.value.number_emails < 3) {
+                    value = datum.value.number_emails.toString();
+                } else if(datum.value.number_emails >= 3) {
+                    value = "3+";
+                }
+            } else {
+                value = "Unknown";
+            }
+            break;
         case "Locale":
             value = datum.value.lang;
             break;

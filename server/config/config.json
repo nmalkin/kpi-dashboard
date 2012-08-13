@@ -13,6 +13,7 @@
         "OS": [ "Windows 7", "Windows XP", "Macintosh", "Linux", "Android" ],
         "Browser": [ "Firefox", "Chrome", "MSIE", "Safari" ],
         "Screen": [ "1024×768", "1680×1050", "1280×1024", "1920×1200", "1280×800" ],
+        "Emails": [ "0", "1", "2", "3+", "Unknown" ],
         "Locale": [ "en-us", "en-US" ]
     },
     "aliases": {
