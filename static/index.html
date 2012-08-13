@@ -71,7 +71,7 @@
                         <a href="#new_user" data-toggle="tab">New user flow</a>
                     </li>
                     <li>
-                        <a href="#sites" data-toggle="tab">Sites logged in</a>
+                        <a href="#sites" data-toggle="tab">Persona adoption</a>
                     </li>
                     <li>
                         <a href="#assertions" data-toggle="tab">Sign-in attempts</a>
@@ -150,12 +150,21 @@
                     </div>
 
                     <div id="sites" class="tab-pane form-inline">
-                        <h2>Mean Number of Sites Logged In</h2>
+                        <h2>Persona adoption</h2>
                         <p>
-                            If the user is authenticated to the Persona servers at any point during the interaction,
-                            we report the number of distinct sites that the user has logged into recently using Persona.
+                            When Persona sends over KPI data, it includes the number of sites the user
+                            is signed in to at the given moment.
                         </p>
-                        <p>This report presents the mean number of sites logged in, for each day.</p>
+                        <p>
+                            This report presents the mean value of this <i>sites signed in</i> metric,
+                            calculated for each day.
+                        </p>
+                        <p>
+                            Note that this value does <i>not</i> represent the mean number of sites
+                            a Persona user is signed in to: that value is higher. (See
+                            <a href="https://github.com/nmalkin/kpi-dashboard/issues/32">issue #32</a>
+                            for discussion.)
+                        </p>
 
                         <div class="chart"></div>
                         <div class="timeline"></div>
