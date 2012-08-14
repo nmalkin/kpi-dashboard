@@ -73,6 +73,26 @@ var _reports = {
             end: dateToTimestamp(LATEST_DATE),
             segmentation: null
         },
+    // Report: new user success percentage
+    new_user_success:
+        {
+            kpi: 'new_user_success',
+            tab: $('#new_user_success'),
+            dataToSeries: dataToTimeSeries,
+            graphDecorator: function(report) {
+                initTimeGraph(report);
+
+                // Use line mode by default
+                this.tab.find('input.vis-type:radio[value=line]').prop('checked', 'checked');
+                toggleVisualization(this, 'line');
+            },
+            update: updateGraph,
+            graph: null,
+            series: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
+            segmentation: null
+        },
     // Report: median of number_sites_logged_in
     sites:
         {
@@ -796,7 +816,8 @@ stepReport(_reports.password_reset);
 })(_reports.new_user);
 
 // Setup report for sites and assertions
-[_reports.sites, _reports.assertions].forEach(function(report) {
+[_reports.sites, _reports.assertions, _reports.new_user_success]
+.forEach(function(report) {
     loadData(report, function() {
         drawGraph(report, report.series);
         report.graphDecorator(report);

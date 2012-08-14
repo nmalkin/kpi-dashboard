@@ -175,6 +175,18 @@ var VIEWS = {
         }
     },
 
+    new_user_success: {
+        map: function(doc) {
+            if(doc.newUserSteps.length > 0) { // Only count new users
+                var lastStep = doc.newUserSteps[doc.newUserSteps.length - 1];
+                var success = (lastStep === "4 - Logged in (assertion generated)");
+                emit(doc.date, success ? 1 : 0);
+            }
+        },
+
+        reduce: '_stats'
+    },
+
     assertions: {
         map: function(doc) {
             emit(doc.date, 1);
@@ -328,6 +340,24 @@ var VIEWS = {
         };
     });
 })();
+
+(function() {
+    var getMapBySegment = function(segmentation) {
+        return function(doc) {
+            emit([doc.date, doc["---SEGMENTATION---"]], doc.number_sites_logged_in);
+        }.toString().replace('---SEGMENTATION---', segmentation);
+
+    };
+
+    var segmentations = Object.keys(data.getSegmentations());
+    segmentations.forEach(function(segmentation) {
+        VIEWS['new_user_success_' + segmentation] = {
+            map: getMapBySegment(segmentation),
+            reduce: '_stats'
+        };
+    });
+})();
+
 
 /** Design document */
 var DOCUMENT = {

@@ -117,7 +117,72 @@ exports.assertions = function(segmentation, start, end, callback) {
 
             callback(result);
         });
-    }};
+    }
+};
+
+exports.new_user_success = function(segmentation, start, end, callback) {
+    var dbOptions = {
+        group: true
+    };
+
+    // Convert timestamps to dates
+    if(start) {
+        dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+        dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+
+    if(segmentation) {
+        if(start) {
+            dbOptions.startkey = [ util.getDateStringFromUnixTime(start) ];
+            // Note that the key is in an array, and we are omitting the second key (segment).
+        }
+        if(end) {
+            dbOptions.endkey = [ util.getDateStringFromUnixTime(end) ];
+        }
+
+        db.view('new_user_success_' + segmentation, dbOptions, function(response) {
+            var result = {};
+            response.forEach(function(row) {
+                var date = row.key[0],
+                    segment = row.key[1],
+                    mean = row.value.sum / row.value.count;
+
+                if(! (segment in result)) {
+                    result[segment] = [];
+                }
+
+                result[segment].push({
+                    category: date,
+                    value: mean
+                });
+            });
+
+            callback(result);
+        });
+    } else {
+        if(start) {
+            dbOptions.startkey = util.getDateStringFromUnixTime(start);
+        }
+        if(end) {
+            dbOptions.endkey = util.getDateStringFromUnixTime(end);
+        }
+
+        db.view('new_user_success', dbOptions, function(response) {
+            var dates = [];
+            response.forEach(function(row) {
+                var stats = row.value;
+                dates.push({
+                    category: row.key, // date
+                    value: stats.sum / stats.count // mean
+                });
+            });
+
+           callback({ Total: dates });
+        });
+    }
+};
 
 /**
  * Reports the number of users at each step in the sign-in flow for new users

@@ -123,6 +123,10 @@ exports.assertions = function(req, res) {
     getReport(reports.assertions, req, res);
 };
 
+exports.new_user_success = function(req, res) {
+    getReport(reports.new_user_success, req, res);
+};
+
 /**
  * Processes request for steps in new user flow
  */

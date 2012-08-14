@@ -79,6 +79,9 @@
                     <li>
                         <a href="#assertions" data-toggle="tab">Sign-in attempts</a>
                     </li>
+                    <li>
+                        <a href="#new_user_success" data-toggle="tab">New user success</a>
+                    </li>
                 </ul>
 
                 <div class="tab-content">
@@ -282,6 +285,48 @@
                             <p>Don't like the data? Why not <a class="reload btn">reload</a>?</p>
                         </div>
                     </div>
+
+
+                    <div id="new_user_success" class="tab-pane form-inline">
+                        <h2>Can new users log in?</h2>
+                        <p>
+                            Tracks percentage of new users succeeding in signing in.
+                        </p>
+
+                        <div class="chart"></div>
+                        <div class="timeline"></div>
+
+                        <div class="chart-controls">
+                            <div class="date-select">
+                                <p>
+                                    From
+                                    <input type="date" class="start" placeholder="YYYY-MM-DD">
+                                    to
+                                    <input type="date" class="end" placeholder="YYYY-MM-DD">
+                                </p>
+                                <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                            </div>
+                            <p class="controls">Show
+                                <label class="control-label inline">
+                                    <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="no" checked="checked"> cumulative
+                                </label>
+                                <label class="control-label inline">
+                                    <input name="sites-segment-enabled" class="segment-enabled" type="radio" value="yes"> segmentation
+                                </label>
+                            </p>
+
+                            <div class="segment-options">
+                                <p>Segment by
+                                    <select class="segment-select input-small">
+                                    </select>
+                                </p>
+                                <div class="segment-boxes">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
         </div>
