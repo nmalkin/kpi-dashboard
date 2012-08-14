@@ -42,6 +42,21 @@ var _reports = {
                 padding: { vertical: 100, horizontal: 0 }
             }
         },
+    password_reset:
+        {
+            kpi: 'password_reset',
+            id: '#password_reset',
+            tab: $('#password_reset'),
+            dataToSeries: function(d) { return d; },
+            update: null,
+            start: dateToTimestamp(EARLIEST_DATE),
+            end: dateToTimestamp(LATEST_DATE),
+            dimensions: {
+                width: 700,
+                height: 600,
+                padding: { vertical: 100, horizontal: 0 }
+            }
+        },
     // Report: new user flow
     new_user:
         {
@@ -572,7 +587,7 @@ getData('milestones', {}, function(data) {
 
 // Set up report for new user flow over time
 
-(function(report) {
+var stepReport = function(report) {
     loadData(report, function() {
         // Set up the svg element
         var chart = d3.select(report.id + ' .chart')
@@ -633,7 +648,7 @@ getData('milestones', {}, function(data) {
             .text(function(d) { return d; })
         ;
 
-        _reports.new_user_time.update = function(report) {
+        report.update = function(report) {
             var rawData = report.series;
 
             var dates = Object.keys(rawData[steps[0]]).sort();
@@ -719,7 +734,9 @@ getData('milestones', {}, function(data) {
 
         report.update(report);
     });
-})(_reports.new_user_time);
+};
+stepReport(_reports.new_user_time);
+stepReport(_reports.password_reset);
 
 
 // Set up new user flow report

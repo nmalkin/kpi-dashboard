@@ -142,3 +142,12 @@ exports.new_user_time = function(req, res) {
     });
 };
 
+exports.password_reset = function(req, res) {
+    var start = getIntParamFromURL(req.url, 'start'),
+        end = getIntParamFromURL(req.url, 'end');
+
+    reports.password_reset(start, end, function(result) {
+        resultToResponse(result, res);
+    });
+};
+

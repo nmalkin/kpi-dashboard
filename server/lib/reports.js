@@ -227,3 +227,47 @@ exports.new_user_time = function(start, end, callback) {
         callback(dataByStep);
     });
 };
+
+exports.password_reset = function(start, end, callback) {
+    var dbOptions = {
+        group: true
+    };
+
+    // Convert timestamps to dates
+    if(start) {
+        dbOptions.startkey = util.getDateStringFromUnixTime(start);
+    }
+    if(end) {
+        dbOptions.endkey = util.getDateStringFromUnixTime(end);
+    }
+
+    db.view('password_reset', dbOptions, function(dataByDate) {
+        // Pivot data
+        // (so that it's organized by step, then date; rather than date, step
+
+        // Set up container object
+        var dataByStep = {};
+        var steps = data.passwordResetStepNames();
+        steps.forEach(function(step) {
+            dataByStep[step] = {};
+        });
+
+        dataByDate.forEach(function(datum) {
+            var date = datum.key;
+
+            steps.forEach(function(step) {
+                var value;
+                if(! (step in datum.value.steps)) { // No data about this step
+                    // That means no one completed it.
+                    value = 0;
+                } else {
+                    value = datum.value.steps[step];
+                }
+
+                dataByStep[step][date] = value;
+            });
+        });
+
+        callback(dataByStep);
+    });
+};

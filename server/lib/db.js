@@ -75,6 +75,68 @@ var VIEWS = {
         }
     },
 
+    password_reset: {
+        map: function(doc) {
+            if(doc.passwordResetSteps.length > 0) {
+                emit(doc.date, doc.passwordResetSteps);
+            }
+        },
+
+        reduce: function(keys, values, rereduce) {
+            if(rereduce) { // Merge the objects that are the results of the reductions
+                var initial = {
+                    steps: {},
+                    total: 0
+                };
+
+                return values.reduce(function(accumulated, current) {
+                    var steps = Object.keys(current.steps);
+                    steps.forEach(function(step) {
+                        if(! (step in accumulated.steps)) {
+                            accumulated.steps[step] = 0;
+                        }
+
+                        // The fraction of users who completed this step is the
+                        // weighted average of the results being merged.
+                        var total = accumulated.total + current.total;
+                        accumulated.steps[step] = current.steps[step] * current.total / total +
+                            accumulated.steps[step] * accumulated.total / total;
+
+                        accumulated.total = total;
+                    });
+
+                    return accumulated;
+                }, initial);
+            } else {
+                var steps = {};
+
+                // Count the number of times each step has been completed
+                values.forEach(function(userSteps) {
+                    userSteps.forEach(function(step) {
+                        if(! (step in steps)) {
+                            steps[step] = 0;
+                        }
+
+                        steps[step]++;
+                    });
+                });
+
+                // Compute fraction of users completing steps
+                var total = values.length;
+                for(var step in steps) {
+                    if(steps.hasOwnProperty(step)) {
+                        steps[step] /= total;
+                    }
+                }
+
+                return {
+                    steps: steps,
+                    total: total
+                };
+            }
+        }
+    },
+
     new_user: {
         map: function(doc) {
             if(doc.newUserSteps.length > 0) { // Only count new users
@@ -329,6 +391,7 @@ exports.populateDatabase = function() {
 
             // Pre-compute certain values for the report (not already in the datum)
             datum.value.newUserSteps = data.newUserSteps(datum);
+            datum.value.passwordResetSteps = data.passwordResetSteps(datum);
             datum.value.date = data.getDate(datum);
 
             // Handle all kinds of sites-logged-in KPIs

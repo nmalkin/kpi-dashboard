@@ -192,3 +192,35 @@ exports.newUserStepNames = function() {
         return step[0];
     });
 };
+
+/**
+ * Returns the names of all steps in the password reset flow that were completed
+ *     in the given data point.
+ */
+exports.passwordResetSteps = function(datum) {
+    var steps = [];
+    var events = eventList(datum);
+
+    if( (events.indexOf('screen.check_registration') === -1) ||
+        (events.indexOf('screen.set_password') === -1) ||
+        (events.indexOf('user.email_staged') !== -1) ||
+        (events.indexOf('user.user_staged') !== -1) )
+    { // not a password reset
+        return steps;
+    }
+
+    config.flows.password_reset.forEach(function(step) {
+        if(events.indexOf(step[1]) !== -1) {
+            steps.push(step[0]);
+        }
+    });
+
+    return steps;
+};
+
+/** Returns the names of all steps in the password reset flow */
+exports.passwordResetStepNames = function() {
+    return config.flows.password_reset.map(function(step) {
+        return step[0];
+    });
+};

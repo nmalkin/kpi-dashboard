@@ -26,6 +26,12 @@
             [ "2 - Choose password", "user.user_staged" ],
             [ "3 - Email verified", "user.user_confirmed" ],
             [ "4 - Logged in (assertion generated)", "assertion_generated" ]
+        ],
+        "password_reset": [
+            [ "1 - Enter email", "screen.set_password" ],
+            [ "2 - Choose new password", "screen.check_registration" ],
+            [ "3 - Email verified", "generate_assertion" ],
+            [ "4 - Logged in (assertion generated)", "assertion_generated" ]
         ]
     },
     "milestones": [

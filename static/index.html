@@ -25,31 +25,31 @@
                 margin-top: 15px;
             }
 
-            #new_user_time .chart {
+            .step-report .chart {
                 width: 800px;
                 margin: 20px auto;
             }
 
-            #new_user_time .legend {
+            .step-report .legend {
                 float: right;
                 width: 300px;
                 padding: 10px;
                 border: 1px solid #000;
             }
 
-            #new_user_time path {
+            .step-report path {
               stroke-width: 3px;
               fill: none;
             }
-            #new_user_time .tick line {
+            .step-report .tick line {
                 stroke-width: 1px;
                 stroke: #999;
             }
-            #new_user_time .tick text {
+            .step-report .tick text {
                 fill: #000;
                 font-size: 10px;
             }
-            #new_user_time .x-tick text {
+            .step-report .x-tick text {
                 transform: 'rotate(90, 0, 0)';
             }
         </style>
@@ -68,6 +68,9 @@
                         <a href="#new_user_time" data-toggle="tab">New user flow over time</a>
                     </li>
                     <li>
+                        <a href="#password_reset" data-toggle="tab">Password reset flow</a>
+                    </li>
+                    <li>
                         <a href="#new_user" data-toggle="tab">New user flow</a>
                     </li>
                     <li>
@@ -79,10 +82,34 @@
                 </ul>
 
                 <div class="tab-content">
-                    <div id="new_user_time" class="tab-pane active form-inline">
+                    <div id="new_user_time" class="step-report tab-pane active form-inline">
                         <h2>Can new users log in?</h2>
                         <p>
                             Tracks percentage of new users proceeding through each step of the sign-in flow over time.
+                        </p>
+
+                        <div class="chart"></div>
+
+                        <div class="legend">
+                            <h4>Legend</h4>
+                        </div>
+
+                        <div class="date-select">
+                            <p>
+                                From
+                                <input type="date" class="start" placeholder="YYYY-MM-DD">
+                                to
+                                <input type="date" class="end" placeholder="YYYY-MM-DD">
+                            </p>
+                            <div class="slider date-slider" style="width: 400px; margin: -5px 0 30px"></div>
+                        </div>
+
+                    </div>
+
+                     <div id="password_reset" class="step-report tab-pane form-inline">
+                        <h2>Can users reset their password?</h2>
+                        <p>
+                            Tracks percentage of users proceeding through each step of the password reset flow.
                         </p>
 
                         <div class="chart"></div>
