@@ -28,9 +28,9 @@
             [ "4 - Logged in (assertion generated)", "assertion_generated" ]
         ],
         "password_reset": [
-            [ "1 - Enter email", "screen.set_password" ],
-            [ "2 - Choose new password", "screen.check_registration" ],
-            [ "3 - Email verified", "generate_assertion" ],
+            [ "1 - Begin password reset", "screen.reset_password" ],
+            [ "2 - Choose new password", "user.reset_password_staged" ],
+            [ "3 - Email verified", "user.reset_password_confirmed" ],
             [ "4 - Logged in (assertion generated)", "assertion_generated" ]
         ]
     },

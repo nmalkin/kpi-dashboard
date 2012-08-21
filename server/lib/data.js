@@ -201,11 +201,7 @@ exports.passwordResetSteps = function(datum) {
     var steps = [];
     var events = eventList(datum);
 
-    if( (events.indexOf('screen.check_registration') === -1) ||
-        (events.indexOf('screen.set_password') === -1) ||
-        (events.indexOf('user.email_staged') !== -1) ||
-        (events.indexOf('user.user_staged') !== -1) )
-    { // not a password reset
+    if(events.indexOf('screen.reset_password') === -1) { // not a password reset
         return steps;
     }
 
